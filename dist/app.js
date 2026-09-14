@@ -441,8 +441,10 @@ function renderMatchCard(match, index) {
     ? '<img src="' + property.image + '" alt="' + escapeHtml(property.name + " exterior") + '" loading="' + (index ? "lazy" : "eager") + '">'
     : '<span aria-hidden="true">' + escapeHtml(TYPE_LABELS[property.type]) + '</span>';
   return '<article class="property-card">' +
-    '<div class="property-visual ' + (property.image ? "has-image" : "") + '" data-property-type="' + property.type + '">' + visual +
-      '<span class="status-badge ' + statusClass(match.status) + '">' + statusLabel(match.status, match.score) + '</span></div>' +
+    '<a class="property-visual card-photo-link ' + (property.image ? "has-image" : "") + '" data-property-type="' + property.type +
+      '" href="' + property.sourceUrl + '" aria-label="View ' + escapeHtml(property.name) + ' details">' + visual +
+      '<span class="status-badge ' + statusClass(match.status) + '">' + statusLabel(match.status, match.score) + '</span>' +
+      '<span class="photo-hint" aria-hidden="true">View details</span></a>' +
     '<div class="property-card-body">' +
       '<div class="property-heading"><div><p>' + escapeHtml(TYPE_LABELS[property.type]) + '</p><h2>' + escapeHtml(property.name) + '</h2><span>' +
       escapeHtml(property.city + ", ON") + '</span></div>' +

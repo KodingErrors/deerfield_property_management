@@ -6,6 +6,8 @@
 // that record in data.js — explicit values always win over the seed. To return the
 // whole portfolio to "unknown", set SEED_TRAITS_ENABLED to false.
 
+import { seededRandom } from "./seeded-random.js";
+
 export const SEED_TRAITS_ENABLED = true;
 
 // [probability of true, probability of false]. The remainder stays null ("not
@@ -56,30 +58,10 @@ const TRAIT_WEIGHTS = Object.freeze({
   },
 });
 
-function hash(value) {
-  let result = 2166136261;
-  for (let index = 0; index < value.length; index += 1) {
-    result ^= value.charCodeAt(index);
-    result = Math.imul(result, 16777619);
-  }
-  return result >>> 0;
-}
-
-function mulberry32(seed) {
-  let state = seed >>> 0;
-  return () => {
-    state = (state + 0x6d2b79f5) >>> 0;
-    let value = state;
-    value = Math.imul(value ^ (value >>> 15), value | 1);
-    value ^= value + Math.imul(value ^ (value >>> 7), value | 61);
-    return ((value ^ (value >>> 14)) >>> 0) / 4294967296;
-  };
-}
-
 export function seedFeatures(id, type) {
   if (!SEED_TRAITS_ENABLED) return {};
   const weights = TRAIT_WEIGHTS[type] || TRAIT_WEIGHTS.office;
-  const random = mulberry32(hash("deerfield-seed:" + id));
+  const random = seededRandom("deerfield-seed:" + id);
   const features = {};
   for (const [key, [likelyTrue, likelyFalse]] of Object.entries(weights)) {
     const roll = random();

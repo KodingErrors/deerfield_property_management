@@ -1,4 +1,5 @@
 import { seedFeatures } from "./seed-traits.js";
+import { seedDetails } from "./seed-details.js";
 
 export const SOURCE_CHECKED_AT = "2026-09-14";
 export const PORTFOLIO_URL = "./properties/";
@@ -27,8 +28,10 @@ function property(id, name, city, type, available, units = [], options = {}) {
     type,
     available,
     units: units.map(([label, size]) => ({ label, size, available: true })),
-    // Explicit per-record features win over the generated seed data.
+    // Explicit per-record values win over the generated seed data.
     features: Object.freeze({ ...blankFeatures, ...seedFeatures(id, type), ...(options.features || {}) }),
+    // Presentational specifics only; the matcher never reads these.
+    details: Object.freeze({ ...seedDetails(id, type, available, city), ...(options.details || {}) }),
     image: options.image || null,
     description: options.description || null,
     sourceUrl: "./property/?id=" + encodeURIComponent(id),

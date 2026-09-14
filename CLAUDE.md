@@ -60,6 +60,12 @@ Shared layers:
   and leaves ~20% of traits `null` so the unknown path stays exercised. An explicit `features`
   value on a record always wins, so real data can replace the seed one property at a time.
   These are **not** Deerfield's published facts; `/properties/` and the detail page say so.
+- **`dist/seed-details.js`** — generated building specifics (asking rate, zoning, clear
+  height, frontage, floors …), type-shaped so an industrial record never gets retail
+  frontage. **Presentational only**: `dist/matcher.js` must never read `details`, or
+  invented data would start deciding eligibility and ranking. A test enforces that.
+- **`dist/seeded-random.js`** — the deterministic PRNG both seed modules share (FNV-1a
+  hash into mulberry32), plus `intBetween`/`oneOf`/`roundedTo` helpers.
 - **`dist/callback-windows.js`** — pure model for callback availability (slot keys, merging
   contiguous slots into windows, email lines). DOM-free so it can be unit tested.
 - **`dist/inquiry-format.js`** — the canonical subject/body rules shared with the review dialog.
@@ -126,6 +132,9 @@ Other repo conventions:
 
 - All markup is built with template literals, so every interpolated value goes through the local
   `escapeHtml()` in each module. There is no shared escape helper — each module defines its own.
+- A listing photo is a link to that property's detail page (`.card-photo-link`) on both the
+  portfolio grid and the results cards, with the "View property details" text link kept
+  alongside it as the affordance that reads in a screen reader.
 - Wizard state persists to `localStorage` under `deerfield-search-v1` (versioned; `loadSearch()`
   discards other versions). Theme persists under `deerfield-theme` and is applied by an inline
   head script before paint to avoid a flash.

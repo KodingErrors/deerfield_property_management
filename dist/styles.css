@@ -313,7 +313,7 @@ h2 { max-width: 570px; margin: 0; font-size: clamp(39px, 4.3vw, 61px); line-heig
 .property-visual::before, .property-visual::after { content: ""; position: absolute; border: 1px solid color-mix(in srgb, var(--primary) 25%, transparent); border-radius: 50%; }
 .property-visual::before { width: 280px; height: 280px; right: -80px; top: -140px; }
 .property-visual::after { width: 190px; height: 190px; right: 20px; top: -95px; }
-.property-visual > span:not(.status-badge) { position: relative; z-index: 1; color: var(--soft-ink); font: italic 400 34px/1 Georgia, serif; }
+.property-visual > span:not(.status-badge):not(.photo-hint) { position: relative; z-index: 1; color: var(--soft-ink); font: italic 400 34px/1 Georgia, serif; }
 .property-visual.has-image { padding: 0; background: #263426; }
 .property-visual.has-image::before, .property-visual.has-image::after { display: none; }
 .property-visual img { width: 100%; height: 100%; display: block; object-fit: cover; }
@@ -529,7 +529,7 @@ h2 { max-width: 570px; margin: 0; font-size: clamp(39px, 4.3vw, 61px); line-heig
 .portfolio-card { overflow: hidden; border: 1px solid var(--border); border-radius: 19px; background: var(--surface); }
 .portfolio-card-visual { position: relative; height: 150px; display: flex; align-items: flex-end; padding: 20px; overflow: hidden; background: var(--soft); }
 .portfolio-card-visual::before { content: ""; position: absolute; width: 260px; height: 260px; right: -65px; top: -130px; border: 1px solid color-mix(in srgb, var(--primary) 25%, transparent); border-radius: 50%; }
-.portfolio-card-visual > span { position: relative; z-index: 1; color: var(--soft-ink); font: italic 400 31px Georgia, serif; }
+.portfolio-card-visual > span:not(.photo-hint) { position: relative; z-index: 1; color: var(--soft-ink); font: italic 400 31px Georgia, serif; }
 .portfolio-card-visual.has-photo { padding: 0; background: #263426; }
 .portfolio-card-visual.has-photo::before { display: none; }
 .portfolio-card-visual img { width: 100%; height: 100%; display: block; object-fit: cover; }
@@ -554,6 +554,8 @@ h2 { max-width: 570px; margin: 0; font-size: clamp(39px, 4.3vw, 61px); line-heig
 .detail-status.available { background: #e5f2df; color: #2f5b28; }
 .detail-status.portfolio { background: var(--soft); color: var(--soft-ink); }
 .detail-columns { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(45px, 8vw, 120px); padding: 85px 0; }
+/* Overview and specifications sit side by side; the unit table wants the full width. */
+.detail-columns > article:last-child { grid-column: 1 / -1; }
 .detail-columns article > p:not(.eyebrow):not(.data-caveat) { color: var(--muted); font-size: 16px; line-height: 1.8; }
 .data-caveat { margin-top: 25px; padding: 16px; border-left: 3px solid #b58c3c; background: var(--surface); color: var(--muted); font-size: 13px; line-height: 1.6; }
 .feature-list { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 25px; }
@@ -636,6 +638,28 @@ h2 { max-width: 570px; margin: 0; font-size: clamp(39px, 4.3vw, 61px); line-heig
 .callback-chip span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .callback-chip b { font-size: 17px; line-height: 1; }
 .callback-empty { margin: 0; color: var(--muted); font-size: 12px; }
+/* The listing photo is the fastest way into a property, so it carries the link. The
+   hint only appears on hover or keyboard focus so the grid stays quiet at rest. */
+.card-photo-link { text-decoration: none; color: inherit; cursor: pointer; }
+.card-photo-link .photo-hint {
+  position: absolute; left: 14px; bottom: 14px; z-index: 2; padding: 6px 11px; border-radius: 999px;
+  background: var(--primary); color: var(--primary-ink); font-size: 11px; font-weight: 800;
+  letter-spacing: .04em; opacity: 0; transform: translateY(5px); transition: opacity .16s ease, transform .16s ease;
+}
+.card-photo-link:hover .photo-hint, .card-photo-link:focus-visible .photo-hint { opacity: 1; transform: translateY(0); }
+.card-photo-link:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
+.card-photo-link img { transition: transform .3s ease; }
+.card-photo-link:hover img { transform: scale(1.03); }
+@media (prefers-reduced-motion: reduce) {
+  .card-photo-link img, .card-photo-link .photo-hint { transition: none; }
+  .card-photo-link:hover img { transform: none; }
+}
+/* Hairlines are drawn per cell rather than by a background showing through 1px gaps, so
+   a part-filled last row leaves no stray coloured block. */
+.spec-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); margin: 18px 0 0; background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+.spec-list > div { display: grid; gap: 3px; padding: 13px 15px; box-shadow: 0 0 0 1px var(--border); }
+.spec-list dt { color: var(--muted); font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; }
+.spec-list dd { margin: 0; font-size: 14px; font-weight: 650; }
 .card-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
 .card-actions a { margin-top: 0; }
 .card-compare { padding: 7px 12px; border: 1px solid var(--border); border-radius: 999px; background: var(--bg); color: var(--muted); cursor: pointer; font: inherit; font-size: 12px; font-weight: 750; }

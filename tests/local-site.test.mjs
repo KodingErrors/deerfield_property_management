@@ -5,6 +5,7 @@ import test from "node:test";
 import { fileURLToPath } from "node:url";
 import { properties } from "../dist/data.js";
 import { seedFeatures } from "../dist/seed-traits.js";
+import { seedDetails } from "../dist/seed-details.js";
 
 const dist = fileURLToPath(new URL("../dist/", import.meta.url));
 
@@ -137,4 +138,63 @@ test("the results view can send an inquiry through the same endpoint as the cont
   // The mailto route stays as a fallback for the static preview.
   assert.match(script, /data-open-email/);
   assert.doesNotMatch(script, /Opening email does not send it/);
+});
+
+test("seed details are deterministic and shaped by property type", () => {
+  assert.deepEqual(
+    seedDetails("industrial-88", "industrial", true, "Burlington"),
+    seedDetails("industrial-88", "industrial", true, "Burlington")
+  );
+
+  const byId = (id) => properties.find((property) => property.id === id);
+  const industrial = byId("industrial-88").details;
+  const retail = byId("retail-65").details;
+  const office = byId("office-89").details;
+
+  assert.ok(industrial.clearHeight && industrial.truckDoors !== undefined && industrial.power);
+  assert.equal(industrial.frontage, undefined, "industrial must not carry retail frontage");
+  assert.ok(retail.frontage && retail.trafficCount);
+  assert.equal(retail.clearHeight, undefined, "retail must not carry a clear height");
+  assert.ok(office.floors && office.commonArea);
+  assert.equal(office.truckDoors, undefined, "office must not carry loading doors");
+
+  for (const property of properties) {
+    assert.ok(property.details.summary, `${property.name} has no summary`);
+    assert.ok(property.details.askingRate.startsWith("$"), `${property.name} has no asking rate`);
+    assert.equal(
+      property.details.availableFrom === "Not currently listed",
+      property.available === false,
+      `${property.name} availability text disagrees with its listing state`
+    );
+  }
+});
+
+test("generated specifics stay plausible", () => {
+  for (const property of properties.filter((item) => item.type === "office")) {
+    if (property.details.floors >= 3) {
+      assert.ok(property.details.elevators >= 1, `${property.name}: ${property.details.floors} floors with no elevator`);
+    }
+  }
+  for (const property of properties) {
+    assert.ok(property.details.yearBuilt >= 1955 && property.details.yearBuilt <= 2015);
+  }
+});
+
+test("seed details never reach the matcher", () => {
+  // Generated specifics are presentational. If the matcher read them, invented data would
+  // start deciding which properties are eligible, excluded or ranked.
+  const matcher = readFileSync(join(dist, "matcher.js"), "utf8");
+  assert.doesNotMatch(matcher, /\bdetails\b/);
+});
+
+test("a listing photo links straight to its detail page", () => {
+  const portfolio = readFileSync(join(dist, "properties.js"), "utf8");
+  assert.match(portfolio, /class="portfolio-card-visual card-photo-link/);
+  assert.match(portfolio, /href="\.\.\/property\/\?id=\$\{encodeURIComponent\(item\.id\)\}"/);
+
+  const app = readFileSync(join(dist, "app.js"), "utf8");
+  assert.match(app, /class="property-visual card-photo-link/);
+
+  // The text link stays: it is the affordance that reads in a screen reader.
+  assert.match(portfolio, /View property details/);
 });
