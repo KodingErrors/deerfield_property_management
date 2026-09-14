@@ -41,6 +41,11 @@ const compareDialog = document.querySelector("#compare-dialog");
 const compareContent = document.querySelector("#compare-content");
 const contactDialog = document.querySelector("#contact-dialog");
 const contactContent = document.querySelector("#contact-content");
+const menuButton = document.querySelector("#menu-toggle");
+const menuClose = document.querySelector("#menu-close");
+const mobileNavigation = document.querySelector("#mobile-navigation");
+const mobileNavigationBackdrop = document.querySelector("#mobile-navigation-backdrop");
+const servicesNavigation = document.querySelector(".services-navigation");
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -770,6 +775,35 @@ compareDialog.addEventListener("click", (event) => {
 });
 contactDialog.addEventListener("click", (event) => {
   if (event.target === contactDialog) contactDialog.close();
+});
+
+function setMobileNavigation(open, restoreFocus = true) {
+  menuButton.setAttribute("aria-expanded", String(open));
+  menuButton.setAttribute("aria-label", open ? "Close navigation" : "Open navigation");
+  mobileNavigation.hidden = !open;
+  mobileNavigationBackdrop.hidden = !open;
+  document.body.classList.toggle("menu-open", open);
+  if (open) menuClose.focus();
+  if (!open && restoreFocus) menuButton.focus();
+}
+
+menuButton.addEventListener("click", () => {
+  setMobileNavigation(menuButton.getAttribute("aria-expanded") !== "true");
+});
+menuClose.addEventListener("click", () => setMobileNavigation(false));
+mobileNavigationBackdrop.addEventListener("click", () => setMobileNavigation(false));
+mobileNavigation.addEventListener("click", (event) => {
+  if (event.target.closest("a")) setMobileNavigation(false, false);
+});
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape" && menuButton.getAttribute("aria-expanded") === "true") {
+    setMobileNavigation(false);
+  }
+});
+document.addEventListener("click", (event) => {
+  if (servicesNavigation?.open && !servicesNavigation.contains(event.target)) {
+    servicesNavigation.removeAttribute("open");
+  }
 });
 
 function openSavedResults() {

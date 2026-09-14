@@ -11,6 +11,7 @@ Guided commercial-property discovery for Deerfield Brokerage. Prospects can sepa
 - explainable ranking, exclusions, comparison, and contact handoff
 - device-aware light/dark theme with a persistent manual override
 - responsive keyboard-accessible interface
+- official About, Services, Properties, and Contact navigation with a descriptive mobile drawer
 - WebMCP tools for staging a search and displaying matches
 - owner-private zero-cost Sites deployment configuration
 

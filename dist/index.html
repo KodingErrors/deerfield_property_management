@@ -20,10 +20,32 @@
   <body>
     <header class="site-header">
       <div class="nav-shell">
+        <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Open navigation" aria-controls="mobile-navigation" aria-expanded="false">
+          <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
+        </button>
         <a class="wordmark" href="/" aria-label="Deerfield Deal Desk home">
           <span class="mark" aria-hidden="true">D</span>
           <span><strong>Deerfield</strong><small>Deal Desk</small></span>
         </a>
+        <nav class="main-navigation" aria-label="Deerfield Brokerage">
+          <a href="https://deerfieldbrokerage.com/about" target="_blank" rel="noreferrer">About</a>
+          <details class="services-navigation">
+            <summary>Services</summary>
+            <div class="services-popover">
+              <div class="services-popover-heading">
+                <p class="eyebrow">What Deerfield does</p>
+                <strong>Commercial real estate expertise at every stage.</strong>
+                <a href="https://deerfieldbrokerage.com/services" target="_blank" rel="noreferrer" aria-label="View all Deerfield services">View all services <span aria-hidden="true">↗</span></a>
+              </div>
+              <a href="https://deerfieldbrokerage.com/services" target="_blank" rel="noreferrer" aria-label="Buyer Representation — strategic acquisition support, market analysis and skilled negotiation"><strong>Buyer Representation</strong><small>Strategic acquisition support, market analysis and skilled negotiation.</small></a>
+              <a href="https://deerfieldbrokerage.com/services" target="_blank" rel="noreferrer" aria-label="Seller Representation — targeted marketing, qualified buyer networks and transaction management"><strong>Seller Representation</strong><small>Targeted marketing, qualified buyer networks and transaction management.</small></a>
+              <a href="https://deerfieldbrokerage.com/services" target="_blank" rel="noreferrer" aria-label="Commercial Leasing — connecting landlords and tenants across office, retail and industrial space"><strong>Commercial Leasing</strong><small>Connecting landlords and tenants across office, retail and industrial space.</small></a>
+              <a href="https://deerfieldbrokerage.com/services" target="_blank" rel="noreferrer" aria-label="Investment Advisory — investment strategy, market timing and portfolio positioning"><strong>Investment Advisory</strong><small>Investment strategy, market timing and portfolio positioning.</small></a>
+            </div>
+          </details>
+          <a href="https://deerfieldbrokerage.com/properties" target="_blank" rel="noreferrer">Properties</a>
+          <a class="contact-navigation" href="https://deerfieldbrokerage.com/contact" target="_blank" rel="noreferrer">Contact</a>
+        </nav>
         <div class="nav-actions">
           <a class="nav-cta" href="#finder">Find a property</a>
           <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Use dark mode">
@@ -32,6 +54,41 @@
         </div>
       </div>
     </header>
+
+    <div class="mobile-navigation-backdrop" id="mobile-navigation-backdrop" hidden></div>
+    <aside class="mobile-navigation" id="mobile-navigation" role="dialog" aria-modal="true" aria-labelledby="mobile-navigation-title" hidden>
+      <header>
+        <div>
+          <p class="eyebrow">Deerfield Brokerage</p>
+          <h2 id="mobile-navigation-title">Explore Deerfield</h2>
+        </div>
+        <button class="menu-close" id="menu-close" type="button" aria-label="Close navigation">×</button>
+      </header>
+      <nav aria-label="Mobile navigation">
+        <a href="https://deerfieldbrokerage.com/about" target="_blank" rel="noreferrer">
+          <span>01</span><strong>About</strong><small>Over 40 years of commercial real estate excellence across Southwestern Ontario.</small>
+        </a>
+        <a href="https://deerfieldbrokerage.com/services" target="_blank" rel="noreferrer">
+          <span>02</span><strong>Services</strong><small>Buyer and seller representation, commercial leasing, and investment advisory.</small>
+        </a>
+        <a href="https://deerfieldbrokerage.com/properties" target="_blank" rel="noreferrer">
+          <span>03</span><strong>Properties</strong><small>Browse Deerfield’s office, retail, industrial, and in-development portfolio.</small>
+        </a>
+        <a class="mobile-contact-link" href="https://deerfieldbrokerage.com/contact" target="_blank" rel="noreferrer">
+          <span>04</span><strong>Contact</strong><small>25 Main Street West, Hamilton · 416-262-6853 · info@deerfieldbrokerage.com</small>
+        </a>
+      </nav>
+      <section class="mobile-service-list" aria-label="Services offered">
+        <p class="eyebrow">Services</p>
+        <ul>
+          <li><strong>Buyer Representation</strong><span>Acquisition strategy, market analysis and negotiation.</span></li>
+          <li><strong>Seller Representation</strong><span>Marketing, qualified buyer access and transaction management.</span></li>
+          <li><strong>Commercial Leasing</strong><span>Structured landlord and tenant solutions.</span></li>
+          <li><strong>Investment Advisory</strong><span>Market timing and portfolio positioning.</span></li>
+        </ul>
+      </section>
+      <a class="mobile-finder-link" href="#finder">Start a property search <span aria-hidden="true">→</span></a>
+    </aside>
 
     <main class="landing-shell">
       <section class="intro">
