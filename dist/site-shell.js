@@ -7,7 +7,6 @@ const menuButton = document.querySelector("#menu-toggle");
 const menuClose = document.querySelector("#menu-close");
 const mobileNavigation = document.querySelector("#mobile-navigation");
 const mobileNavigationBackdrop = document.querySelector("#mobile-navigation-backdrop");
-const servicesNavigation = document.querySelector(".services-navigation");
 
 function syncThemeControl() {
   if (!themeButton || !themeIcon) return;
@@ -48,8 +47,4 @@ mobileNavigation?.querySelectorAll("a").forEach((link) => link.addEventListener(
 document.addEventListener("keydown", (event) => {
   if (event.key === "Escape" && mobileNavigation && !mobileNavigation.hidden) setMenu(false);
 });
-document.addEventListener("click", (event) => {
-  if (servicesNavigation?.open && !servicesNavigation.contains(event.target)) servicesNavigation.removeAttribute("open");
-});
-
 syncThemeControl();

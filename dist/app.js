@@ -45,7 +45,6 @@ const menuButton = document.querySelector("#menu-toggle");
 const menuClose = document.querySelector("#menu-close");
 const mobileNavigation = document.querySelector("#mobile-navigation");
 const mobileNavigationBackdrop = document.querySelector("#mobile-navigation-backdrop");
-const servicesNavigation = document.querySelector(".services-navigation");
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -800,12 +799,6 @@ document.addEventListener("keydown", (event) => {
     setMobileNavigation(false);
   }
 });
-document.addEventListener("click", (event) => {
-  if (servicesNavigation?.open && !servicesNavigation.contains(event.target)) {
-    servicesNavigation.removeAttribute("open");
-  }
-});
-
 function openSavedResults() {
   if (location.hash !== "#results" || !search.type) return false;
   results = matchProperties(search, properties);
