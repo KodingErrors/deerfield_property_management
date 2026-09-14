@@ -594,7 +594,7 @@ h2 { max-width: 570px; margin: 0; font-size: clamp(39px, 4.3vw, 61px); line-heig
 .callback-picker legend { padding: 0; color: var(--muted); font-size: 13px; font-weight: 750; }
 .callback-picker > p { margin: 7px 0 13px; color: var(--muted); font-size: 13px; line-height: 1.5; }
 .availability-scroll { overflow-x: auto; padding-bottom: 7px; scrollbar-color: var(--primary) var(--track); }
-.availability-grid { min-width: 735px; display: grid; grid-template-columns: 82px repeat(7, minmax(88px, 1fr)); gap: 5px; }
+.availability-grid { min-width: 735px; display: grid; grid-template-columns: 82px repeat(7, minmax(88px, 1fr)); gap: 5px; touch-action: none; }
 .availability-corner, .availability-day, .availability-time { display: grid; place-items: center; min-height: 43px; color: var(--muted); font-size: 11px; font-weight: 750; }
 .availability-day { position: sticky; top: 0; z-index: 1; border-radius: 8px; background: var(--soft); color: var(--soft-ink); }
 .availability-day strong, .availability-day small { display: block; }
@@ -607,6 +607,27 @@ h2 { max-width: 570px; margin: 0; font-size: clamp(39px, 4.3vw, 61px); line-heig
 .availability-cell input:focus-visible + span { outline: 2px solid var(--primary); outline-offset: 2px; }
 .availability-cell input:checked + span { border-color: var(--primary); background: var(--primary); }
 .availability-cell input:checked + span::after { content: "✓"; position: absolute; inset: 0; display: grid; place-items: center; color: var(--primary-ink); font-size: 14px; font-weight: 850; }
+.callback-header { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 10px; margin: 7px 0 13px; }
+.callback-header p { margin: 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+.callback-mode-toggle { padding: 7px 13px; border: 1px solid var(--border); border-radius: 999px; background: var(--bg); color: var(--text); cursor: pointer; font: inherit; font-size: 12px; font-weight: 700; }
+.callback-mode-toggle:hover { border-color: var(--primary); color: var(--primary); }
+.callback-hint { margin: 0 0 11px; color: var(--muted); font-size: 12px; line-height: 1.5; }
+.availability-day, .availability-time { border: 0; font-family: inherit; cursor: pointer; }
+.availability-time { background: none; }
+.availability-day:hover, .availability-time:hover { color: var(--primary); }
+.availability-day:focus-visible, .availability-time:focus-visible { border-radius: 8px; outline: 2px solid var(--primary); outline-offset: 2px; }
+.range-fields { display: flex; flex-wrap: wrap; align-items: end; gap: 10px; }
+.range-fields label { display: grid; flex: 1 1 145px; gap: 5px; }
+.range-fields span { color: var(--muted); font-size: 12px; font-weight: 700; }
+.range-fields select { min-height: 44px; padding: 0 11px; border: 1px solid var(--border); border-radius: 10px; background: var(--bg); color: var(--text); font: inherit; font-size: 14px; }
+.range-fields .secondary-button { flex: 0 0 auto; min-height: 44px; margin: 0; }
+.range-status { margin: 9px 0 0; color: var(--muted); font-size: 12px; }
+.range-status:empty { display: none; }
+.callback-summary { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 13px; }
+.callback-chip { display: inline-flex; align-items: center; gap: 8px; min-height: 34px; max-width: 100%; padding: 5px 8px 5px 12px; border: 1px solid color-mix(in srgb, var(--primary) 35%, var(--border)); border-radius: 999px; background: var(--soft); color: var(--soft-ink); cursor: pointer; font: inherit; font-size: 12px; }
+.callback-chip span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.callback-chip b { font-size: 17px; line-height: 1; }
+.callback-empty { margin: 0; color: var(--muted); font-size: 12px; }
 .honeypot { position: absolute !important; left: -10000px !important; width: 1px !important; height: 1px !important; overflow: hidden !important; }
 .email-review-dialog { width: min(780px, calc(100vw - 30px)); max-height: calc(100vh - 30px); padding: 0; border: 1px solid var(--border); border-radius: 22px; background: var(--surface); color: var(--text); box-shadow: 0 30px 90px rgb(0 0 0 / 28%); }
 .email-review-dialog::backdrop { background: rgb(8 12 8 / 66%); backdrop-filter: blur(5px); }
@@ -614,8 +635,11 @@ h2 { max-width: 570px; margin: 0; font-size: clamp(39px, 4.3vw, 61px); line-heig
 .email-review-card > header { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; padding-bottom: 21px; border-bottom: 1px solid var(--border); }
 .email-review-card h2 { margin: 5px 0 0; font: 400 clamp(29px, 4vw, 42px)/1.08 Georgia, serif; letter-spacing: -.03em; }
 .dialog-close { width: 42px; height: 42px; flex: 0 0 auto; border: 1px solid var(--border); border-radius: 50%; background: var(--bg); color: var(--text); cursor: pointer; font-size: 24px; line-height: 1; }
-.review-recipient { display: flex; gap: 18px; margin: 20px 0 0; padding: 13px 15px; border-radius: 10px; background: var(--soft); color: var(--soft-ink); font-size: 14px; }
-.review-recipient strong { min-width: 55px; }
+.review-intro { margin: 20px 0 0; color: var(--muted); font-size: 13px; line-height: 1.5; }
+.review-envelope { display: grid; gap: 7px; margin: 12px 0 0; padding: 14px 15px; border-radius: 10px; background: var(--soft); color: var(--soft-ink); font-size: 13px; }
+.review-envelope > div { display: flex; gap: 14px; }
+.review-envelope dt { flex: 0 0 auto; min-width: 68px; font-weight: 750; }
+.review-envelope dd { margin: 0; overflow-wrap: anywhere; }
 .email-review-card .wide-field { margin-top: 17px; }
 .email-review-card textarea { min-height: 310px; padding-top: 13px; font-family: ui-monospace, SFMono-Regular, Consolas, monospace; font-size: 13px; line-height: 1.55; }
 .email-review-actions { display: flex; justify-content: flex-end; gap: 10px; margin-top: 21px; }

@@ -1,3 +1,5 @@
+import { seedFeatures } from "./seed-traits.js";
+
 export const SOURCE_CHECKED_AT = "2026-09-14";
 export const PORTFOLIO_URL = "./properties/";
 
@@ -25,7 +27,8 @@ function property(id, name, city, type, available, units = [], options = {}) {
     type,
     available,
     units: units.map(([label, size]) => ({ label, size, available: true })),
-    features: Object.freeze({ ...blankFeatures, ...(options.features || {}) }),
+    // Explicit per-record features win over the generated seed data.
+    features: Object.freeze({ ...blankFeatures, ...seedFeatures(id, type), ...(options.features || {}) }),
     image: options.image || null,
     description: options.description || null,
     sourceUrl: "./property/?id=" + encodeURIComponent(id),

@@ -1,0 +1,8 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "installCommand": "echo No dependencies are needed: the build and the edge functions use only local files and Node builtins.",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist/client",
+  "trailingSlash": true
+}

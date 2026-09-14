@@ -1,4 +1,6 @@
 import { properties } from "./data.js";
+import { DEFAULT_RECIPIENT, enforceBody, enforceSubject } from "./inquiry-format.js";
+import { SLOT_MINUTES, availabilityLines, mergedWindows, slotValue, slotsBetween, timeLabel, windowLabel } from "./callback-windows.js";
 import "./site-shell.js";
 
 const TIME_ZONE = "America/Toronto";
@@ -12,9 +14,22 @@ const propertySearch = document.querySelector("#contact-property-search");
 const propertySummary = document.querySelector("#contact-property-summary");
 const propertyChips = document.querySelector("#contact-property-chips");
 const availabilityGrid = document.querySelector("#callback-availability");
+const gridView = document.querySelector("#callback-grid-view");
+const rangeView = document.querySelector("#callback-range-builder");
+const rangeDay = document.querySelector("#callback-range-day");
+const rangeStart = document.querySelector("#callback-range-start");
+const rangeEnd = document.querySelector("#callback-range-end");
+const rangeAdd = document.querySelector("#callback-range-add");
+const rangeChips = document.querySelector("#callback-range-chips");
+const rangeStatus = document.querySelector("#callback-range-status");
+const modeToggle = document.querySelector("#callback-mode-toggle");
 const reviewDialog = document.querySelector("#email-review-dialog");
 const reviewSubject = document.querySelector("#email-review-subject");
 const reviewBody = document.querySelector("#email-review-body");
+const reviewTo = document.querySelector("#review-to");
+const reviewFrom = document.querySelector("#review-from");
+const reviewReplyTo = document.querySelector("#review-reply-to");
+const reviewSubjectFinal = document.querySelector("#review-subject-final");
 const reviewClose = document.querySelector("#email-review-close");
 const reviewBack = document.querySelector("#email-review-back");
 const sendButton = document.querySelector("#email-send-button");
@@ -98,32 +113,164 @@ function callbackDays() {
   });
 }
 
-function timeLabel(minutes) {
-  const hour = Math.floor(minutes / 60);
-  const minute = minutes % 60;
-  return `${hour > 12 ? hour - 12 : hour}:${String(minute).padStart(2, "0")} ${hour >= 12 ? "PM" : "AM"}`;
-}
-
 const days = callbackDays();
-const times = Array.from({ length: 16 }, (_, index) => 9 * 60 + index * 30);
+const times = Array.from({ length: 16 }, (_, index) => 9 * 60 + index * SLOT_MINUTES);
+
 availabilityGrid.innerHTML = [
   '<span class="availability-corner">Eastern</span>',
-  ...days.map((day) => `<span class="availability-day"><strong>${day.shortDay}</strong><small>${day.shortDate}</small></span>`),
+  ...days.map((day) => `<button class="availability-day" type="button" data-day="${escapeHtml(day.key)}" aria-label="Toggle every time on ${escapeHtml(day.long)}"><strong>${escapeHtml(day.shortDay)}</strong><small>${escapeHtml(day.shortDate)}</small></button>`),
   ...times.flatMap((minutes) => [
-    `<span class="availability-time">${timeLabel(minutes)}</span>`,
+    `<button class="availability-time" type="button" data-time="${minutes}" aria-label="Toggle ${timeLabel(minutes)} on every day">${timeLabel(minutes)}</button>`,
     ...days.map((day) => {
-      const value = `${day.key}|${String(Math.floor(minutes / 60)).padStart(2, "0")}:${String(minutes % 60).padStart(2, "0")}`;
+      const value = slotValue(day.key, minutes);
       const label = `${day.long} at ${timeLabel(minutes)} Eastern`;
-      return `<label class="availability-cell" title="${label}"><input type="checkbox" value="${value}" aria-label="${label}"><span aria-hidden="true"></span></label>`;
+      return `<label class="availability-cell" data-slot="${escapeHtml(value)}" title="${escapeHtml(label)}"><input type="checkbox" value="${escapeHtml(value)}" aria-label="${escapeHtml(label)}"><span aria-hidden="true"></span></label>`;
     })
   ])
 ].join("");
 
+function setSlot(value, selected) {
+  if (selected) selectedAvailability.add(value);
+  else selectedAvailability.delete(value);
+}
+
+function selectedWindows() {
+  return mergedWindows(selectedAvailability, days, times);
+}
+
+function renderWindowChips() {
+  const windows = selectedWindows();
+  rangeChips.innerHTML = windows.length
+    ? windows.map((window) => `<button class="callback-chip" type="button" data-day="${escapeHtml(window.day.key)}" data-start="${window.start}" data-end="${window.end}" aria-label="Remove ${escapeHtml(window.day.long)}, ${timeLabel(window.start)} to ${timeLabel(window.end)}"><span>${escapeHtml(window.day.shortDay)} ${escapeHtml(window.day.shortDate)} · ${windowLabel(window)}</span><b aria-hidden="true">×</b></button>`).join("")
+    : '<p class="callback-empty">No callback windows selected yet.</p>';
+}
+
+function syncAvailabilityViews() {
+  for (const cell of availabilityGrid.querySelectorAll(".availability-cell")) {
+    cell.querySelector("input").checked = selectedAvailability.has(cell.dataset.slot);
+  }
+  renderWindowChips();
+}
+
+// Drag to paint a block of time. The first cell decides whether the whole drag selects
+// or clears, so dragging back over a painted block erases it.
+let paintMode = null;
+
+function paintCell(cell) {
+  if (!cell || paintMode === null) return;
+  setSlot(cell.dataset.slot, paintMode);
+  cell.querySelector("input").checked = paintMode;
+  renderWindowChips();
+}
+
+availabilityGrid.addEventListener("pointerdown", (event) => {
+  const cell = event.target.closest(".availability-cell");
+  if (!cell) return;
+  event.preventDefault();
+  paintMode = !selectedAvailability.has(cell.dataset.slot);
+  cell.querySelector("input").focus();
+  paintCell(cell);
+  availabilityGrid.setPointerCapture(event.pointerId);
+});
+
+// Pointer capture routes every move to the grid, so hit-test the cell under the pointer
+// rather than relying on pointerenter.
+availabilityGrid.addEventListener("pointermove", (event) => {
+  if (paintMode === null) return;
+  paintCell(document.elementFromPoint(event.clientX, event.clientY)?.closest(".availability-cell"));
+});
+
+function endPaint() {
+  paintMode = null;
+}
+
+window.addEventListener("pointerup", endPaint);
+window.addEventListener("pointercancel", endPaint);
+
+// Pointer painting calls preventDefault, so this only fires for keyboard toggles.
 availabilityGrid.addEventListener("change", (event) => {
   if (!(event.target instanceof HTMLInputElement)) return;
-  if (event.target.checked) selectedAvailability.add(event.target.value);
-  else selectedAvailability.delete(event.target.value);
+  setSlot(event.target.value, event.target.checked);
+  renderWindowChips();
 });
+
+function toggleMany(values) {
+  const selectAll = !values.every((value) => selectedAvailability.has(value));
+  for (const value of values) setSlot(value, selectAll);
+  syncAvailabilityViews();
+}
+
+availabilityGrid.addEventListener("click", (event) => {
+  const dayButton = event.target.closest("[data-day]");
+  if (dayButton) {
+    toggleMany(times.map((minutes) => slotValue(dayButton.dataset.day, minutes)));
+    return;
+  }
+  const timeButton = event.target.closest("[data-time]");
+  if (timeButton) toggleMany(days.map((day) => slotValue(day.key, Number(timeButton.dataset.time))));
+});
+
+rangeDay.innerHTML = days.map((day) => `<option value="${escapeHtml(day.key)}">${escapeHtml(day.long)}</option>`).join("");
+rangeStart.innerHTML = times.map((minutes) => `<option value="${minutes}">${timeLabel(minutes)}</option>`).join("");
+rangeEnd.innerHTML = times.map((minutes) => `<option value="${minutes + SLOT_MINUTES}">${timeLabel(minutes + SLOT_MINUTES)}</option>`).join("");
+rangeStart.value = String(times[0]);
+rangeEnd.value = String(times[0] + SLOT_MINUTES * 4);
+
+rangeStart.addEventListener("change", () => {
+  if (Number(rangeEnd.value) <= Number(rangeStart.value)) {
+    rangeEnd.value = String(Number(rangeStart.value) + SLOT_MINUTES);
+  }
+});
+
+rangeAdd.addEventListener("click", () => {
+  const start = Number(rangeStart.value);
+  const end = Number(rangeEnd.value);
+  if (end <= start) {
+    rangeStatus.textContent = "Choose an end time later than the start time.";
+    return;
+  }
+  for (const value of slotsBetween(rangeDay.value, start, end)) setSlot(value, true);
+  const day = days.find((item) => item.key === rangeDay.value);
+  rangeStatus.textContent = `Added ${day.long}, ${timeLabel(start)} – ${timeLabel(end)}.`;
+  syncAvailabilityViews();
+});
+
+rangeChips.addEventListener("click", (event) => {
+  const chip = event.target.closest(".callback-chip");
+  if (!chip) return;
+  for (const value of slotsBetween(chip.dataset.day, Number(chip.dataset.start), Number(chip.dataset.end))) {
+    setSlot(value, false);
+  }
+  rangeStatus.textContent = "";
+  syncAvailabilityViews();
+});
+
+// Painting suits a mouse; the range builder suits a thumb. Pick by device, but let the
+// visitor override, and never let a viewport change discard their choice.
+const coarsePointer = matchMedia("(pointer: coarse), (max-width: 720px)");
+let availabilityMode = coarsePointer.matches ? "list" : "grid";
+let visitorChoseMode = false;
+
+function applyAvailabilityMode() {
+  gridView.hidden = availabilityMode !== "grid";
+  rangeView.hidden = availabilityMode !== "list";
+  modeToggle.textContent = availabilityMode === "grid" ? "Switch to list view" : "Switch to grid view";
+}
+
+modeToggle.addEventListener("click", () => {
+  availabilityMode = availabilityMode === "grid" ? "list" : "grid";
+  visitorChoseMode = true;
+  applyAvailabilityMode();
+});
+
+coarsePointer.addEventListener("change", (event) => {
+  if (visitorChoseMode) return;
+  availabilityMode = event.matches ? "list" : "grid";
+  applyAvailabilityMode();
+});
+
+applyAvailabilityMode();
+syncAvailabilityViews();
 
 const selectedId = new URLSearchParams(location.search).get("property");
 if (properties.some((item) => item.id === selectedId)) selectedPropertyIds.add(selectedId);
@@ -131,18 +278,6 @@ renderSelectedProperties();
 
 function selectedPropertyList() {
   return properties.filter((item) => selectedPropertyIds.has(item.id));
-}
-
-function availabilityLines() {
-  return days.flatMap((day) => {
-    const selectedTimes = [...selectedAvailability]
-      .filter((value) => value.startsWith(`${day.key}|`))
-      .map((value) => {
-        const [hour, minute] = value.split("|")[1].split(":").map(Number);
-        return timeLabel(hour * 60 + minute);
-      });
-    return selectedTimes.length ? [`- ${day.long}: ${selectedTimes.join(", ")}`] : [];
-  });
 }
 
 function formValues() {
@@ -157,7 +292,7 @@ function formValues() {
 
 function buildInquiry(values) {
   const selected = selectedPropertyList();
-  const callbacks = availabilityLines();
+  const callbacks = availabilityLines(selectedAvailability, days, times);
   const subjectDetail = selected.length === 1 ? selected[0].name : selected.length > 1 ? `${selected.length} properties` : values.interest;
   return {
     subject: `[DEERFIELD] Inquiry — ${subjectDetail}`,
@@ -172,6 +307,29 @@ function buildInquiry(values) {
     ].join("\n")
   };
 }
+
+// Ask the server where inquiries actually go instead of hardcoding an address in the
+// dialog. The static preview has no /api, so fall back to the compiled-in default.
+const deliveryConfig = { recipient: DEFAULT_RECIPIENT, from: null };
+
+function renderEnvelope() {
+  reviewTo.textContent = deliveryConfig.recipient;
+  reviewFrom.textContent = deliveryConfig.from || "Deerfield Deal Desk";
+  reviewReplyTo.textContent = pendingInquiry?.email || "—";
+  reviewSubjectFinal.textContent = reviewSubject.value.trim() ? enforceSubject(reviewSubject.value) : "—";
+}
+
+fetch("/api/inquiry-config", { headers: { accept: "application/json" } })
+  .then((response) => (response.ok ? response.json() : null))
+  .then((config) => {
+    if (!config) return;
+    if (config.recipient) deliveryConfig.recipient = config.recipient;
+    deliveryConfig.from = config.from || null;
+    renderEnvelope();
+  })
+  .catch(() => {});
+
+reviewSubject.addEventListener("input", renderEnvelope);
 
 function closeReview() {
   reviewDialog.close();
@@ -190,8 +348,9 @@ form.addEventListener("submit", (event) => {
   if (!form.reportValidity()) return;
   pendingInquiry = { ...values, propertyIds: [...selectedPropertyIds], availability: [...selectedAvailability] };
   const email = buildInquiry(values);
-  reviewSubject.value = email.subject;
+  reviewSubject.value = enforceSubject(email.subject);
   reviewBody.value = email.body;
+  renderEnvelope();
   sendStatus.textContent = "";
   reviewDialog.showModal();
 });
@@ -207,7 +366,8 @@ sendButton.addEventListener("click", async () => {
   try {
     const response = await fetch("/api/inquiries", {
       method: "POST", headers: { "content-type": "application/json" },
-      body: JSON.stringify({ ...pendingInquiry, subject: reviewSubject.value, body: reviewBody.value, submissionId: crypto.randomUUID() })
+      // Send precisely what the dialog displayed.
+      body: JSON.stringify({ ...pendingInquiry, subject: enforceSubject(reviewSubject.value), body: enforceBody(reviewBody.value), submissionId: crypto.randomUUID() })
     });
     const result = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(result.error || "The email could not be sent. Please try again.");
@@ -216,7 +376,8 @@ sendButton.addEventListener("click", async () => {
     form.reset();
     selectedPropertyIds.clear();
     selectedAvailability.clear();
-    availabilityGrid.querySelectorAll("input:checked").forEach((input) => { input.checked = false; });
+    syncAvailabilityViews();
+    rangeStatus.textContent = "";
     renderSelectedProperties();
     pendingInquiry = null;
     setTimeout(() => reviewDialog.close(), 1400);

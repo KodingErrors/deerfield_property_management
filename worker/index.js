@@ -1,5 +1,8 @@
-const RECIPIENT = "raiyanoff@gmail.com";
+// Keep these rules in step with dist/inquiry-format.js, which the contact page uses to
+// preview the outgoing email. tests/worker.test.mjs fails if the two ever diverge.
+const DEFAULT_RECIPIENT = "raiyanworks@gmail.com";
 const SUBJECT_PREFIX = "[DEERFIELD]";
+const SUBJECT_DETAIL_MAX_LENGTH = 160 - SUBJECT_PREFIX.length - 1;
 
 function json(data, status = 200) {
   return new Response(JSON.stringify(data), {
@@ -20,6 +23,13 @@ function validEmail(value) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
+// The destination can be retargeted on the host without a code deploy. A malformed
+// value falls back rather than dropping the inquiry on the floor.
+function resolveRecipient(env) {
+  const configured = clean(env?.INQUIRY_RECIPIENT, 254);
+  return validEmail(configured) ? configured : DEFAULT_RECIPIENT;
+}
+
 async function sendInquiry(request, env) {
   if (!request.headers.get("content-type")?.includes("application/json")) {
     return json({ error: "Please submit the inquiry from the contact form." }, 415);
@@ -36,8 +46,14 @@ async function sendInquiry(request, env) {
 
   const name = clean(input.name, 120);
   const email = clean(input.email, 254);
-  const subjectDraft = clean(input.subject, 160).replace(/^\[DEERFIELD\]\s*/i, "");
-  const subject = `${SUBJECT_PREFIX} ${subjectDraft || "Property inquiry"}`;
+  // Mirrors enforceSubject() in dist/inquiry-format.js: strip, then truncate, then
+  // re-apply the prefix, so the dialog's preview survives this pass untouched.
+  const subjectDetail = clean(input.subject, 600)
+    .replace(/^\[DEERFIELD\]\s*/i, "")
+    .trim()
+    .slice(0, SUBJECT_DETAIL_MAX_LENGTH)
+    .trim();
+  const subject = `${SUBJECT_PREFIX} ${subjectDetail || "Property inquiry"}`;
   const body = clean(input.body, 10000);
   const submissionId = clean(input.submissionId, 80);
 
@@ -60,7 +76,7 @@ async function sendInquiry(request, env) {
       },
       body: JSON.stringify({
         from: env.RESEND_FROM_EMAIL,
-        to: [RECIPIENT],
+        to: [resolveRecipient(env)],
         reply_to: email,
         subject,
         text: body,
@@ -81,15 +97,36 @@ async function sendInquiry(request, env) {
   return json({ ok: true, id: result.id });
 }
 
+// Lets the contact page show the real destination in its review dialog instead of a
+// hardcoded address. Reports whether sending is configured, never the API key.
+function inquiryConfig(env) {
+  return json({
+    recipient: resolveRecipient(env),
+    from: clean(env?.RESEND_FROM_EMAIL, 254) || null,
+    subjectPrefix: SUBJECT_PREFIX,
+    deliveryReady: Boolean(env?.RESEND_API_KEY && env?.RESEND_FROM_EMAIL)
+  });
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
-    if (url.pathname === "/api/inquiries") {
+    // Hosts differ on whether they canonicalize a trailing slash, so match either form.
+    const route = url.pathname.replace(/\/+$/, "") || "/";
+    if (route === "/api/inquiries") {
       if (request.method !== "POST") {
         return new Response(null, { status: 405, headers: { allow: "POST" } });
       }
       return sendInquiry(request, env);
     }
+    if (route === "/api/inquiry-config") {
+      if (request.method !== "GET") {
+        return new Response(null, { status: 405, headers: { allow: "GET" } });
+      }
+      return inquiryConfig(env);
+    }
+    // Only Cloudflare binds static assets here; on Vercel just the /api routes reach us.
+    if (!env?.ASSETS) return new Response(null, { status: 404 });
     return env.ASSETS.fetch(request);
   }
 };

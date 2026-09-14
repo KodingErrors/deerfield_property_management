@@ -4,6 +4,7 @@ import { join } from "node:path";
 import test from "node:test";
 import { fileURLToPath } from "node:url";
 import { properties } from "../dist/data.js";
+import { seedFeatures } from "../dist/seed-traits.js";
 
 const dist = fileURLToPath(new URL("../dist/", import.meta.url));
 
@@ -56,4 +57,44 @@ test("contact form includes callback selection and editable email review", () =>
   assert.match(contactPage, /9:00 a\.m\. to 5:00 p\.m\. Eastern/);
   assert.match(contactPage, /id="email-review-subject"/);
   assert.match(contactPage, /id="email-review-body"/);
+});
+
+test("seed feature data is deterministic and never overrides a real value", () => {
+  assert.deepEqual(seedFeatures("industrial-88", "industrial"), seedFeatures("industrial-88", "industrial"));
+  assert.notDeepEqual(seedFeatures("industrial-88", "industrial"), seedFeatures("retail-65", "retail"));
+
+  // office-89 carries parking: true from the published listing, so the seed must lose.
+  const office = properties.find((property) => property.id === "office-89");
+  assert.equal(office.features.parking, true);
+});
+
+test("the portfolio keeps unconfirmed features so the verification path stays live", () => {
+  const values = properties.flatMap((property) => Object.values(property.features));
+  assert.ok(values.some((value) => value === null), "no unknown features remain");
+  assert.ok(values.some((value) => value === true), "no confirmed features present");
+  assert.ok(values.some((value) => value === false), "no ruled-out features present");
+});
+
+test("the portfolio page discloses that feature data is sample data", () => {
+  const page = readFileSync(join(dist, "properties/index.html"), "utf8");
+  assert.match(page, /sample data/i);
+});
+
+test("callback availability offers both a grid and a range builder", () => {
+  const contactPage = readFileSync(join(dist, "contact/index.html"), "utf8");
+  for (const id of ["callback-availability", "callback-range-builder", "callback-range-day", "callback-range-start", "callback-range-end", "callback-range-add", "callback-range-chips", "callback-mode-toggle"]) {
+    assert.match(contactPage, new RegExp(`id="${id}"`), `missing #${id}`);
+  }
+});
+
+test("the review dialog shows the delivery envelope, not a hardcoded address", () => {
+  const contactPage = readFileSync(join(dist, "contact/index.html"), "utf8");
+  for (const id of ["review-to", "review-from", "review-reply-to", "review-subject-final"]) {
+    assert.match(contactPage, new RegExp(`id="${id}"`), `missing #${id}`);
+  }
+  assert.match(contactPage, /Resend API/);
+
+  const contactScript = readFileSync(join(dist, "contact.js"), "utf8");
+  assert.match(contactScript, /\/api\/inquiry-config/);
+  assert.match(contactScript, /enforceSubject/);
 });
