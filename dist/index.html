@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Build your commercial property requirements and compare clear, explainable matches from Deerfield Brokerage.">
+    <meta name="theme-color" content="#fbfcfa">
+    <title>Find Your Space | Deerfield Deal Desk</title>
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="./styles.css">
+    <script>
+      (() => {
+        const saved = localStorage.getItem("deerfield-theme");
+        const dark = saved ? saved === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+        document.documentElement.dataset.theme = dark ? "dark" : "light";
+      })();
+    </script>
+    <script src="./app.js" type="module"></script>
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="nav-shell">
+        <a class="wordmark" href="/" aria-label="Deerfield Deal Desk home">
+          <span class="mark" aria-hidden="true">D</span>
+          <span><strong>Deerfield</strong><small>Deal Desk</small></span>
+        </a>
+        <div class="nav-actions">
+          <a class="nav-cta" href="#finder">Find a property</a>
+          <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Use dark mode">
+            <span aria-hidden="true" id="theme-icon">◐</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <main class="landing-shell">
+      <section class="intro">
+        <p class="eyebrow">Find your space</p>
+        <h1>A clearer way to find your <em>next space.</em></h1>
+        <p class="lede">Tell us what your business needs. We’ll separate the essentials from the preferences and show how every available property fits.</p>
+        <dl class="portfolio-stats">
+          <div><dt>29</dt><dd>Public properties</dd></div>
+          <div><dt>3</dt><dd>Space categories</dd></div>
+          <div><dt>2 min</dt><dd>Guided search</dd></div>
+        </dl>
+      </section>
+
+      <section class="finder-card" id="finder" aria-labelledby="space-question">
+        <header class="finder-header">
+          <div>
+            <p class="card-title">Build your property search</p>
+            <p>Your answers stay editable until you contact Deerfield.</p>
+          </div>
+          <p class="step-count">Step 1 of 4</p>
+          <div class="progress" aria-label="Step 1 of 4"><i></i><i></i><i></i><i></i></div>
+        </header>
+        <div class="finder-body">
+          <p class="eyebrow">Your space</p>
+          <h2 id="space-question">What kind of space are you looking for?</h2>
+          <p class="help">Choose the closest fit. You can adjust the details on the next screen.</p>
+          <div class="space-grid" id="space-grid">
+            <button class="choice" type="button" data-type="industrial"><span class="choice-icon">I</span><span><strong>Industrial</strong><small>Warehousing, distribution or production</small></span></button>
+            <button class="choice" type="button" data-type="retail"><span class="choice-icon">R</span><span><strong>Retail</strong><small>Storefront, restaurant or customer-facing space</small></span></button>
+            <button class="choice" type="button" data-type="office"><span class="choice-icon">O</span><span><strong>Office</strong><small>Professional, medical or administrative space</small></span></button>
+            <button class="choice" type="button" data-type="unsure"><span class="choice-icon">?</span><span><strong>I’m not sure</strong><small>Tell us how you plan to use the space</small></span></button>
+          </div>
+          <footer class="finder-actions">
+            <button class="primary-button" id="continue-button" type="button" disabled>Continue <span aria-hidden="true">→</span></button>
+          </footer>
+        </div>
+      </section>
+    </main>
+
+    <main class="results-view" id="results-view" hidden aria-live="polite"></main>
+
+    <dialog class="modal compare-modal" id="compare-dialog" aria-labelledby="compare-title">
+      <div id="compare-content"></div>
+    </dialog>
+
+    <dialog class="modal contact-modal" id="contact-dialog" aria-labelledby="contact-title">
+      <div id="contact-content"></div>
+    </dialog>
+
+    <footer class="legal-footer">
+      <div>
+        <p><strong>Deerfield Deal Desk</strong> <span>Find Your Space</span></p>
+        <p>Property listings and leasing opportunities are for informational purposes only. Availability is subject to change without notice and does not guarantee a tenancy or transaction. Information is deemed reliable but not guaranteed.</p>
+        <p>Not intended to solicit buyers, sellers, landlords, or tenants already under contract with another brokerage.</p>
+      </div>
+      <div class="legal-links">
+        <a href="https://deerfieldbrokerage.com/properties" target="_blank" rel="noreferrer">Current portfolio</a>
+        <a href="https://deerfieldbrokerage.com/privacy-policy" target="_blank" rel="noreferrer">Privacy</a>
+      </div>
+    </footer>
+  </body>
+</html>
