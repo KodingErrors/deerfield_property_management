@@ -40,11 +40,20 @@ test("property detail links remain inside Deal Desk", () => {
   for (const property of properties) assert.match(property.sourceUrl, /^\.\/property\/\?id=/);
 });
 
-test("contact form supports multiple properties without a confirmation gate", () => {
+test("contact form supports compact multiple properties without a confirmation gate", () => {
   const contactPage = readFileSync(join(dist, "contact/index.html"), "utf8");
-  assert.match(contactPage, /<select[^>]+name="property"[^>]+multiple/);
+  assert.match(contactPage, /id="contact-property-toggle"/);
+  assert.match(contactPage, /id="contact-property-options"/);
   assert.doesNotMatch(contactPage, /consent-check/);
 
   const contactScript = readFileSync(join(dist, "contact.js"), "utf8");
-  assert.match(contactScript, /formData\.getAll\("property"\)/);
+  assert.match(contactScript, /selectedPropertyIds = new Set/);
+});
+
+test("contact form includes callback selection and editable email review", () => {
+  const contactPage = readFileSync(join(dist, "contact/index.html"), "utf8");
+  assert.match(contactPage, /id="callback-availability"/);
+  assert.match(contactPage, /9:00 a\.m\. to 5:00 p\.m\. Eastern/);
+  assert.match(contactPage, /id="email-review-subject"/);
+  assert.match(contactPage, /id="email-review-body"/);
 });
