@@ -566,8 +566,10 @@ h2 { max-width: 570px; margin: 0; font-size: clamp(39px, 4.3vw, 61px); line-heig
 .inquiry-form .form-grid { gap: 17px; }
 .inquiry-form .wide-field { display: block; margin-top: 18px; }
 .inquiry-form textarea { min-height: 150px; padding-top: 14px; resize: vertical; }
-.consent-check { display: flex; gap: 11px; margin: 22px 0; color: var(--muted); font-size: 12px; line-height: 1.55; }
-.consent-check input { flex: 0 0 18px; width: 18px; height: 18px; accent-color: var(--primary); }
+.inquiry-form select[multiple] { height: auto; min-height: 210px; padding: 7px; }
+.inquiry-form select[multiple] option { padding: 10px 9px; border-radius: 7px; }
+.inquiry-form select[multiple] option:checked { background: var(--primary); color: var(--button-ink); }
+.field-help { display: block; margin-top: 8px; color: var(--muted); font-size: 12px; line-height: 1.5; }
 .form-status { min-height: 20px; margin: 13px 0 0; color: var(--primary); font-size: 12px; font-weight: 750; }
 
 .policy-page .page-hero { position: relative; }

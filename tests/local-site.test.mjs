@@ -39,3 +39,12 @@ test("every portfolio record has a packaged image", () => {
 test("property detail links remain inside Deal Desk", () => {
   for (const property of properties) assert.match(property.sourceUrl, /^\.\/property\/\?id=/);
 });
+
+test("contact form supports multiple properties without a confirmation gate", () => {
+  const contactPage = readFileSync(join(dist, "contact/index.html"), "utf8");
+  assert.match(contactPage, /<select[^>]+name="property"[^>]+multiple/);
+  assert.doesNotMatch(contactPage, /consent-check/);
+
+  const contactScript = readFileSync(join(dist, "contact.js"), "utf8");
+  assert.match(contactScript, /formData\.getAll\("property"\)/);
+});

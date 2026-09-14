@@ -17,9 +17,8 @@
         <form class="inquiry-form" id="inquiry-form">
           <div class="form-grid"><label class="wide-field"><span>Full name *</span><input name="name" required autocomplete="name"></label><label class="wide-field"><span>Email *</span><input name="email" type="email" required autocomplete="email"></label><label class="wide-field"><span>Phone</span><input name="phone" type="tel" autocomplete="tel"></label><label class="wide-field"><span>Company</span><input name="company" autocomplete="organization"></label></div>
           <label class="wide-field"><span>I’m interested in</span><select name="interest"><option>Commercial leasing</option><option>Buying a property</option><option>Selling a property</option><option>Investment advisory</option><option>General inquiry</option></select></label>
-          <label class="wide-field"><span>Property</span><select name="property" id="contact-property"><option value="">No specific property</option></select></label>
+          <label class="wide-field"><span>Properties</span><select name="property" id="contact-property" multiple size="7" aria-describedby="contact-property-help"></select><small class="field-help" id="contact-property-help">Select one or more properties. Leave all options unselected for a general inquiry.</small></label>
           <label class="wide-field"><span>Message *</span><textarea name="message" rows="7" required placeholder="Tell us about the space, timing, location, or investment goal."></textarea></label>
-          <label class="consent-check"><input type="checkbox" required><span>I confirm these details are accurate and understand this tool prepares an email in my own mail application.</span></label>
           <button class="primary-button" type="submit">Review email to Deerfield →</button><p class="form-status" id="form-status" aria-live="polite"></p>
         </form>
       </section>

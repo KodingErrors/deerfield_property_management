@@ -7,14 +7,19 @@ const status = document.querySelector("#form-status");
 const selectedId = new URLSearchParams(location.search).get("property");
 
 propertySelect.insertAdjacentHTML("beforeend", properties.map((item) => `<option value="${item.id}">${item.name} — ${item.city}</option>`).join(""));
-if (properties.some((item) => item.id === selectedId)) propertySelect.value = selectedId;
+if (properties.some((item) => item.id === selectedId)) {
+  const selectedOption = propertySelect.querySelector(`option[value="${CSS.escape(selectedId)}"]`);
+  if (selectedOption) selectedOption.selected = true;
+}
 
 form.addEventListener("submit", (event) => {
   event.preventDefault();
   if (!form.reportValidity()) return;
-  const values = Object.fromEntries(new FormData(form));
-  const property = properties.find((item) => item.id === values.property);
-  const subject = `Deerfield inquiry — ${property?.name || values.interest}`;
+  const formData = new FormData(form);
+  const values = Object.fromEntries(formData);
+  const selectedPropertyIds = formData.getAll("property");
+  const selectedProperties = properties.filter((item) => selectedPropertyIds.includes(item.id));
+  const subject = `Deerfield inquiry — ${selectedProperties.length === 1 ? selectedProperties[0].name : selectedProperties.length > 1 ? `${selectedProperties.length} properties` : values.interest}`;
   const body = [
     "DEERFIELD DEAL DESK INQUIRY",
     "",
@@ -23,7 +28,10 @@ form.addEventListener("submit", (event) => {
     `Phone: ${values.phone || "Not provided"}`,
     `Company: ${values.company || "Not provided"}`,
     `Interest: ${values.interest}`,
-    `Property: ${property ? `${property.name}, ${property.city}, ON` : "No specific property"}`,
+    "Properties:",
+    ...(selectedProperties.length
+      ? selectedProperties.map((property) => `- ${property.name}, ${property.city}, ON`)
+      : ["- No specific property"]),
     "",
     "MESSAGE",
     values.message,
