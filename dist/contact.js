@@ -23,6 +23,7 @@ const rangeAdd = document.querySelector("#callback-range-add");
 const rangeChips = document.querySelector("#callback-range-chips");
 const rangeStatus = document.querySelector("#callback-range-status");
 const modeToggle = document.querySelector("#callback-mode-toggle");
+const callbackPhoneNote = document.querySelector("#callback-phone-note");
 const reviewDialog = document.querySelector("#email-review-dialog");
 const reviewSubject = document.querySelector("#email-review-subject");
 const reviewBody = document.querySelector("#email-review-body");
@@ -138,7 +139,13 @@ function selectedWindows() {
   return mergedWindows(selectedAvailability, days, times);
 }
 
+// A phone number is never required; the note just explains what changes without one.
+function syncCallbackPhoneNote() {
+  callbackPhoneNote.hidden = !(selectedAvailability.size && !form.elements.phone.value.trim());
+}
+
 function renderWindowChips() {
+  syncCallbackPhoneNote();
   const windows = selectedWindows();
   rangeChips.innerHTML = windows.length
     ? windows.map((window) => `<button class="callback-chip" type="button" data-day="${escapeHtml(window.day.key)}" data-start="${window.start}" data-end="${window.end}" aria-label="Remove ${escapeHtml(window.day.long)}, ${timeLabel(window.start)} to ${timeLabel(window.end)}"><span>${escapeHtml(window.day.shortDay)} ${escapeHtml(window.day.shortDate)} · ${windowLabel(window)}</span><b aria-hidden="true">×</b></button>`).join("")
@@ -269,6 +276,8 @@ coarsePointer.addEventListener("change", (event) => {
   applyAvailabilityMode();
 });
 
+form.elements.phone.addEventListener("input", syncCallbackPhoneNote);
+
 applyAvailabilityMode();
 syncAvailabilityViews();
 
@@ -343,8 +352,6 @@ reviewDialog.addEventListener("click", (event) => { if (event.target === reviewD
 form.addEventListener("submit", (event) => {
   event.preventDefault();
   const values = formValues();
-  const phoneInput = form.elements.phone;
-  phoneInput.setCustomValidity(selectedAvailability.size && !values.phone ? "Enter a phone number for your requested callback." : "");
   if (!form.reportValidity()) return;
   pendingInquiry = { ...values, propertyIds: [...selectedPropertyIds], availability: [...selectedAvailability] };
   const email = buildInquiry(values);

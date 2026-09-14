@@ -98,3 +98,16 @@ test("the review dialog shows the delivery envelope, not a hardcoded address", (
   assert.match(contactScript, /\/api\/inquiry-config/);
   assert.match(contactScript, /enforceSubject/);
 });
+
+test("phone is optional and nothing can wedge the form's validity", () => {
+  const contactPage = readFileSync(join(dist, "contact/index.html"), "utf8");
+  const phoneField = contactPage.match(/<input name="phone"[^>]*>/)[0];
+  assert.doesNotMatch(phoneField, /\brequired\b/, "phone must not be a required field");
+  assert.match(contactPage, /<span>Phone <small>Optional<\/small><\/span>/);
+
+  // setCustomValidity inside the submit handler is a trap: once the field is invalid the
+  // browser stops firing submit, so the line that clears the message never runs again and
+  // the form can never be submitted. Keep the handler free of it.
+  const contactScript = readFileSync(join(dist, "contact.js"), "utf8");
+  assert.doesNotMatch(contactScript, /setCustomValidity/);
+});
