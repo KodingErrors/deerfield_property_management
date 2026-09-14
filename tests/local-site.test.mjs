@@ -111,3 +111,30 @@ test("phone is optional and nothing can wedge the form's validity", () => {
   const contactScript = readFileSync(join(dist, "contact.js"), "utf8");
   assert.doesNotMatch(contactScript, /setCustomValidity/);
 });
+
+test("the portfolio page supports selecting and comparing properties", () => {
+  const page = readFileSync(join(dist, "properties/index.html"), "utf8");
+  for (const id of ["compare-bar", "compare-bar-count", "compare-open", "compare-clear", "portfolio-compare-dialog", "portfolio-compare-content"]) {
+    assert.match(page, new RegExp(`id="${id}"`), `missing #${id}`);
+  }
+
+  const script = readFileSync(join(dist, "properties.js"), "utf8");
+  assert.match(script, /compareSelection = new Set/);
+  assert.match(script, /data-compare=/);
+  // The comparison hands every chosen property to the contact form at once.
+  assert.match(script, /property=\$\{encodeURIComponent\(item\.id\)\}/);
+
+  const contactScript = readFileSync(join(dist, "contact.js"), "utf8");
+  assert.match(contactScript, /getAll\("property"\)/, "contact page must accept multiple properties");
+});
+
+test("the results view can send an inquiry through the same endpoint as the contact form", () => {
+  const script = readFileSync(join(dist, "app.js"), "utf8");
+  assert.match(script, /enforceSubject/);
+  assert.match(script, /\/api\/inquiry-config/);
+  assert.match(script, /"\/api\/inquiries"/);
+  assert.match(script, /data-send-inquiry/);
+  // The mailto route stays as a fallback for the static preview.
+  assert.match(script, /data-open-email/);
+  assert.doesNotMatch(script, /Opening email does not send it/);
+});

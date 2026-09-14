@@ -1,4 +1,4 @@
-import { cities, featureSets, properties } from "./data.js";
+import { cities, featureSets, properties, SOURCE_CHECKED_AT } from "./data.js";
 import "./site-shell.js";
 
 const searchInput = document.querySelector("#portfolio-search");
@@ -11,6 +11,16 @@ const featureFilters = document.querySelector("#feature-filters");
 const clearFilters = document.querySelector("#clear-filters");
 const grid = document.querySelector("#portfolio-grid");
 const count = document.querySelector("#portfolio-count");
+const compareBar = document.querySelector("#compare-bar");
+const compareBarCount = document.querySelector("#compare-bar-count");
+const compareOpen = document.querySelector("#compare-open");
+const compareClear = document.querySelector("#compare-clear");
+const compareDialog = document.querySelector("#portfolio-compare-dialog");
+const compareContent = document.querySelector("#portfolio-compare-content");
+
+// Selection survives filtering: narrowing the list should not silently drop a property
+// the visitor already picked.
+const compareSelection = new Set();
 let activeType = "all";
 const selectedFeatures = new Set();
 
@@ -60,7 +70,7 @@ function render() {
   grid.innerHTML = filtered.length ? filtered.map((item) => `
     <article class="portfolio-card">
       <div class="portfolio-card-visual ${item.image ? "has-photo" : ""}">${item.image ? `<img src="../${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" loading="lazy">` : `<span>${escapeHtml(typeLabel[item.type])}</span>`}<b class="status-badge ${item.available ? "strong" : "verify"}">${item.available ? "Space available" : "Portfolio property"}</b></div>
-      <div class="portfolio-card-copy"><p>${escapeHtml(item.city)}, Ontario</p><h2>${escapeHtml(item.name)}</h2><span>${escapeHtml(unitSummary(item))}</span>${selectedFeatures.size ? `<div class="card-feature-status">${escapeHtml(featureSummary(item))}</div>` : ""}<a href="../property/?id=${encodeURIComponent(item.id)}" aria-label="View ${escapeHtml(item.name)} details">View property details →</a></div>
+      <div class="portfolio-card-copy"><p>${escapeHtml(item.city)}, Ontario</p><h2>${escapeHtml(item.name)}</h2><span>${escapeHtml(unitSummary(item))}</span>${selectedFeatures.size ? `<div class="card-feature-status">${escapeHtml(featureSummary(item))}</div>` : ""}<div class="card-actions"><a href="../property/?id=${encodeURIComponent(item.id)}" aria-label="View ${escapeHtml(item.name)} details">View property details →</a><button class="card-compare" type="button" data-compare="${escapeHtml(item.id)}" aria-pressed="${compareSelection.has(item.id)}">${compareSelection.has(item.id) ? "✓ Selected" : "+ Compare"}</button></div></div>
     </article>`).join("") : '<div class="portfolio-empty"><h2>No properties match those filters.</h2><p>Try a different city or property type, clear a feature, or include listings whose features need confirmation.</p></div>';
 }
 
@@ -99,4 +109,79 @@ clearFilters.addEventListener("click", () => {
   });
   render();
 });
+
+function syncCompareBar() {
+  const total = compareSelection.size;
+  compareBar.hidden = total === 0;
+  compareBarCount.textContent = total === 1
+    ? "1 property selected — choose one more to compare"
+    : `${total} properties selected`;
+  compareOpen.disabled = total < 2;
+}
+
+grid.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-compare]");
+  if (!button) return;
+  const id = button.dataset.compare;
+  if (compareSelection.has(id)) compareSelection.delete(id);
+  else compareSelection.add(id);
+  const isSelected = compareSelection.has(id);
+  button.setAttribute("aria-pressed", String(isSelected));
+  button.textContent = isSelected ? "✓ Selected" : "+ Compare";
+  syncCompareBar();
+});
+
+compareClear.addEventListener("click", () => {
+  compareSelection.clear();
+  render();
+  syncCompareBar();
+});
+
+function featureCell(value) {
+  if (value === true) return '<span class="cell-match">✓ Confirmed</span>';
+  if (value === false) return '<span class="cell-miss">× Not available</span>';
+  return '<span class="cell-unknown">? Not confirmed</span>';
+}
+
+function checkedDate() {
+  const [year, month, day] = SOURCE_CHECKED_AT.split("-").map(Number);
+  return new Intl.DateTimeFormat("en-CA", { year: "numeric", month: "long", day: "numeric", timeZone: "UTC" })
+    .format(new Date(Date.UTC(year, month - 1, day)));
+}
+
+function openCompare() {
+  const chosen = properties.filter((item) => compareSelection.has(item.id));
+  if (chosen.length < 2) return;
+  const rows = [
+    { label: "Market", render: (item) => escapeHtml(`${item.city}, Ontario`) },
+    { label: "Type", render: (item) => escapeHtml(typeLabel[item.type]) },
+    { label: "Status", render: (item) => item.available
+      ? '<span class="cell-match">Space available</span>'
+      : '<span class="cell-unknown">No current space published</span>' },
+    { label: "Available space", render: (item) => escapeHtml(unitSummary(item)) },
+    ...features.map((key) => ({ label: featureLabels.get(key), render: (item) => featureCell(item.features[key]) })),
+    { label: "Information checked", render: () => escapeHtml(checkedDate()) },
+  ];
+  const contactHref = "../contact/?" + chosen.map((item) => `property=${encodeURIComponent(item.id)}`).join("&");
+  compareContent.innerHTML =
+    '<header class="modal-header"><div><p class="eyebrow">Side by side</p><h2 id="portfolio-compare-title">Compare properties</h2>' +
+    '<p>Feature data is sample data for demonstration. Confirm anything that matters with the broker.</p></div>' +
+    '<button class="dialog-close" type="button" data-close-compare aria-label="Close comparison">×</button></header>' +
+    '<div class="compare-scroll"><table><thead><tr><th>Criteria</th>' +
+    chosen.map((item) => `<th>${escapeHtml(item.name)}<small>${escapeHtml(item.city)}, ON</small></th>`).join("") +
+    '</tr></thead><tbody>' +
+    rows.map((row) => `<tr><th>${escapeHtml(row.label)}</th>` +
+      chosen.map((item) => `<td>${row.render(item)}</td>`).join("") + "</tr>").join("") +
+    '</tbody></table></div>' +
+    '<footer class="modal-footer"><button class="secondary-button" type="button" data-close-compare>Close</button>' +
+    `<a class="primary-button" href="${contactHref}">Contact about these →</a></footer>`;
+  compareDialog.showModal();
+}
+
+compareOpen.addEventListener("click", openCompare);
+compareDialog.addEventListener("click", (event) => {
+  if (event.target === compareDialog || event.target.closest("[data-close-compare]")) compareDialog.close();
+});
+
 render();
+syncCompareBar();

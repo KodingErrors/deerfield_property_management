@@ -628,6 +628,18 @@ h2 { max-width: 570px; margin: 0; font-size: clamp(39px, 4.3vw, 61px); line-heig
 .callback-chip span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .callback-chip b { font-size: 17px; line-height: 1; }
 .callback-empty { margin: 0; color: var(--muted); font-size: 12px; }
+.card-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.card-actions a { margin-top: 0; }
+.card-compare { padding: 7px 12px; border: 1px solid var(--border); border-radius: 999px; background: var(--bg); color: var(--muted); cursor: pointer; font: inherit; font-size: 12px; font-weight: 750; }
+.card-compare:hover { border-color: var(--primary); color: var(--primary); }
+.card-compare[aria-pressed="true"] { border-color: var(--primary); background: var(--primary); color: var(--primary-ink); }
+.compare-bar { position: sticky; bottom: 14px; z-index: 5; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-top: 22px; padding: 14px 18px; border: 1px solid color-mix(in srgb, var(--primary) 35%, var(--border)); border-radius: 16px; background: color-mix(in srgb, var(--surface) 94%, transparent); backdrop-filter: blur(12px); box-shadow: 0 14px 40px rgb(0 0 0 / 14%); }
+.compare-bar p { margin: 0; color: var(--text); font-size: 13px; font-weight: 700; }
+.compare-bar-actions { display: flex; flex-wrap: wrap; gap: 9px; }
+.compare-bar-actions .primary-button, .compare-bar-actions .secondary-button { margin: 0; }
+.compare-bar-actions .primary-button:disabled { opacity: .5; cursor: not-allowed; }
+.modal-footer .form-status { margin: 0 auto 0 0; text-align: left; }
+.modal-footer a.primary-button { display: inline-flex; align-items: center; text-decoration: none; }
 .honeypot { position: absolute !important; left: -10000px !important; width: 1px !important; height: 1px !important; overflow: hidden !important; }
 .email-review-dialog { width: min(780px, calc(100vw - 30px)); max-height: calc(100vh - 30px); padding: 0; border: 1px solid var(--border); border-radius: 22px; background: var(--surface); color: var(--text); box-shadow: 0 30px 90px rgb(0 0 0 / 28%); }
 .email-review-dialog::backdrop { background: rgb(8 12 8 / 66%); backdrop-filter: blur(5px); }

@@ -281,8 +281,10 @@ form.elements.phone.addEventListener("input", syncCallbackPhoneNote);
 applyAvailabilityMode();
 syncAvailabilityViews();
 
-const selectedId = new URLSearchParams(location.search).get("property");
-if (properties.some((item) => item.id === selectedId)) selectedPropertyIds.add(selectedId);
+// The portfolio comparison hands over several properties at once.
+for (const id of new URLSearchParams(location.search).getAll("property")) {
+  if (properties.some((item) => item.id === id)) selectedPropertyIds.add(id);
+}
 renderSelectedProperties();
 
 function selectedPropertyList() {

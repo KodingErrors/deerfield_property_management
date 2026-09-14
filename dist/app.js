@@ -1,5 +1,6 @@
 import { cities, featureSets, properties, SOURCE_CHECKED_AT } from "./data.js";
 import { formatNumber, matchProperties } from "./matcher.js";
+import { DEFAULT_RECIPIENT, enforceBody, enforceSubject } from "./inquiry-format.js";
 
 const STORAGE_KEY = "deerfield-search-v1";
 const THEME_KEY = "deerfield-theme";
@@ -45,6 +46,20 @@ const menuButton = document.querySelector("#menu-toggle");
 const menuClose = document.querySelector("#menu-close");
 const mobileNavigation = document.querySelector("#mobile-navigation");
 const mobileNavigationBackdrop = document.querySelector("#mobile-navigation-backdrop");
+
+// Same delivery path as the contact page. The static preview has no /api, so fall back
+// to the compiled-in default.
+const deliveryConfig = { recipient: DEFAULT_RECIPIENT, from: null };
+
+fetch("/api/inquiry-config", { headers: { accept: "application/json" } })
+  .then((response) => (response.ok ? response.json() : null))
+  .then((config) => {
+    if (!config) return;
+    if (config.recipient) deliveryConfig.recipient = config.recipient;
+    deliveryConfig.from = config.from || null;
+    updateEnvelope();
+  })
+  .catch(() => {});
 
 function escapeHtml(value) {
   return String(value ?? "")
@@ -570,7 +585,7 @@ function openContact() {
   const matches = selectedMatches();
   contactContent.innerHTML =
     '<header class="modal-header"><div><p class="eyebrow">Review before contacting</p><h2 id="contact-title">Your requirement packet</h2>' +
-    '<p>Everything remains editable. Opening email does not send it.</p></div>' +
+    '<p>Everything remains editable. Send it straight to Deerfield, or open it in your own email app.</p></div>' +
     '<button class="icon-button" type="button" data-close="contact" aria-label="Close contact form">×</button></header>' +
     '<div class="contact-layout"><form id="contact-form" novalidate>' +
       '<div class="form-grid">' +
@@ -587,9 +602,17 @@ function openContact() {
           : '<p>No property selected. Deerfield will receive your requirements only.</p>') +
       '</fieldset>' +
       '<p class="form-error" id="contact-error" role="alert"></p>' +
-    '</form><aside class="packet-preview"><p class="eyebrow">Email preview</p><pre id="packet-preview"></pre></aside></div>' +
-    '<footer class="modal-footer"><button class="secondary-button" type="button" data-copy-inquiry>Copy inquiry</button>' +
-    '<button class="primary-button" type="button" data-open-email>Open email <span aria-hidden="true">↗</span></button></footer>';
+    '</form><aside class="packet-preview"><p class="eyebrow">Email preview</p>' +
+      '<dl class="review-envelope" id="wizard-envelope">' +
+        '<div><dt>To</dt><dd id="wizard-to">' + escapeHtml(deliveryConfig.recipient) + '</dd></div>' +
+        '<div><dt>From</dt><dd id="wizard-from">' + escapeHtml(deliveryConfig.from || "Deerfield Deal Desk") + '</dd></div>' +
+        '<div><dt>Reply-To</dt><dd id="wizard-reply-to">—</dd></div>' +
+        '<div><dt>Subject</dt><dd id="wizard-subject">—</dd></div>' +
+      '</dl><pre id="packet-preview"></pre></aside></div>' +
+    '<footer class="modal-footer"><p class="form-status" id="wizard-send-status" aria-live="polite"></p>' +
+    '<button class="secondary-button" type="button" data-copy-inquiry>Copy inquiry</button>' +
+    '<button class="secondary-button" type="button" data-open-email>Open in email app <span aria-hidden="true">↗</span></button>' +
+    '<button class="primary-button" type="button" data-send-inquiry>Send inquiry →</button></footer>';
   updatePacketPreview();
   contactDialog.showModal();
   document.querySelector("#contact-name")?.focus();
@@ -686,6 +709,55 @@ function timingLabel(value) {
 function updatePacketPreview() {
   const preview = document.querySelector("#packet-preview");
   if (preview) preview.textContent = buildInquiry(contactValues()).body;
+  updateEnvelope();
+}
+
+function updateEnvelope() {
+  if (!document.querySelector("#wizard-envelope")) return;
+  const values = contactValues();
+  document.querySelector("#wizard-to").textContent = deliveryConfig.recipient;
+  document.querySelector("#wizard-from").textContent = deliveryConfig.from || "Deerfield Deal Desk";
+  document.querySelector("#wizard-reply-to").textContent = values.email || "—";
+  document.querySelector("#wizard-subject").textContent = enforceSubject(buildInquiry(values).subject);
+}
+
+async function sendWizardInquiry() {
+  const form = document.querySelector("#contact-form");
+  const values = contactValues();
+  const error = document.querySelector("#contact-error");
+  const status = document.querySelector("#wizard-send-status");
+  const button = document.querySelector("[data-send-inquiry]");
+  if (!form.reportValidity() || !values.name || !values.email || !values.intendedUse) {
+    error.textContent = "Add your name, email and intended use before sending.";
+    return;
+  }
+  error.textContent = "";
+  const packet = buildInquiry(values);
+  button.disabled = true;
+  button.textContent = "Sending…";
+  status.textContent = "Sending your inquiry securely…";
+  try {
+    const response = await fetch("/api/inquiries", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        name: values.name,
+        email: values.email,
+        subject: enforceSubject(packet.subject),
+        body: enforceBody(packet.body),
+        submissionId: crypto.randomUUID(),
+      }),
+    });
+    const result = await response.json().catch(() => ({}));
+    if (!response.ok) throw new Error(result.error || "The email could not be sent. Please try again.");
+    status.textContent = "Your inquiry was sent to Deerfield successfully.";
+    showToast("Your inquiry was sent to Deerfield.");
+  } catch (sendError) {
+    status.textContent = sendError instanceof Error ? sendError.message : "The email could not be sent. Please try again.";
+  } finally {
+    button.disabled = false;
+    button.textContent = "Send inquiry →";
+  }
 }
 
 contactContent.addEventListener("input", updatePacketPreview);
@@ -698,6 +770,10 @@ contactContent.addEventListener("click", async (event) => {
   if (event.target.closest("[data-copy-inquiry]")) {
     const packet = buildInquiry(contactValues());
     await copyText("Subject: " + packet.subject + "\n\n" + packet.body);
+    return;
+  }
+  if (event.target.closest("[data-send-inquiry]")) {
+    await sendWizardInquiry();
     return;
   }
   if (event.target.closest("[data-open-email]")) {
