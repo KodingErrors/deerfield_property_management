@@ -446,7 +446,7 @@ function renderMatchCard(match, index) {
           '<li data-outcome="' + item.outcome + '"><strong>' + escapeHtml(item.label) + '</strong><span>' + escapeHtml(item.reason) + '</span></li>'
         ).join("") + '</ul></details>' +
       '<footer class="property-actions">' +
-        '<a class="text-link" href="' + property.sourceUrl + '" target="_blank" rel="noreferrer">View public listing ↗</a>' +
+        '<a class="text-link" href="' + property.sourceUrl + '">View property details →</a>' +
         '<button class="select-button" type="button" data-select="' + property.id + '" aria-pressed="' + selectedNow + '">' +
           (selectedNow ? "Selected ✓" : "Select to compare") + '</button>' +
       '</footer>' +
@@ -655,7 +655,7 @@ function buildInquiry(values) {
     "",
     "Properties I'm interested in:",
     ...(selectedProperties.length
-      ? selectedProperties.map((property) => "- " + property.name + " — " + property.city + ", ON — " + property.sourceUrl)
+      ? selectedProperties.map((property) => "- " + property.name + " — " + property.city + ", ON")
       : ["- No specific property selected"]),
     "",
     "Items that need verification:",

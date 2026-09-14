@@ -1,5 +1,5 @@
 export const SOURCE_CHECKED_AT = "2026-09-14";
-export const PORTFOLIO_URL = "https://deerfieldbrokerage.com/properties";
+export const PORTFOLIO_URL = "./properties/";
 
 const blankFeatures = Object.freeze({
   parking: null,
@@ -28,7 +28,7 @@ function property(id, name, city, type, available, units = [], options = {}) {
     features: Object.freeze({ ...blankFeatures, ...(options.features || {}) }),
     image: options.image || null,
     description: options.description || null,
-    sourceUrl: options.sourceUrl || PORTFOLIO_URL,
+    sourceUrl: "./property/?id=" + encodeURIComponent(id),
     sourceCheckedAt: SOURCE_CHECKED_AT,
   });
 }
@@ -40,33 +40,30 @@ export const properties = Object.freeze([
     ["4", 2000],
     ["5", 1500],
     ["07", 2469],
-  ], { sourceUrl: "https://deerfieldbrokerage.com/properties/office/91" }),
-  property("office-90", "123 James Street North", "Hamilton", "office", true, [], {
-    sourceUrl: "https://deerfieldbrokerage.com/properties/office/90",
-  }),
+  ], { image: "assets/office-91.webp" }),
+  property("office-90", "123 James Street North", "Hamilton", "office", true, [], { image: "assets/office-90.webp" }),
   property("office-93", "135 Rebecca Street", "Hamilton", "office", true, [
     ["03", 4205],
-  ], { sourceUrl: "https://deerfieldbrokerage.com/properties/office/93" }),
-  property("office-rebecca-182", "182 Rebecca Street", "Hamilton", "office", false),
-  property("industrial-south-service-240", "240 South Service Road", "Stoney Creek", "industrial", false),
-  property("retail-gwb-picton-30", "30 GWB Picton", "Picton", "retail", false),
+  ], { image: "assets/office-93.webp" }),
+  property("office-rebecca-182", "182 Rebecca Street", "Hamilton", "office", false, [], { image: "assets/office-rebecca-182.webp" }),
+  property("industrial-south-service-240", "240 South Service Road", "Stoney Creek", "industrial", false, [], { image: "assets/industrial-south-service-240.webp" }),
+  property("retail-gwb-picton-30", "30 GWB Picton", "Picton", "retail", false, [], { image: "assets/retail-gwb-picton-30.webp" }),
   property("industrial-88", "4151 Mainway", "Burlington", "industrial", true, [
     ["West", 14028],
   ], {
-    image: "https://deerfieldbrokerage.com/property-media/DF_Mainway.jpg",
+    image: "assets/industrial-88.webp",
     description: "Industrial property at 4151 Mainway, Burlington.",
-    sourceUrl: "https://deerfieldbrokerage.com/properties/industrial/88",
   }),
   property("industrial-87", "589 Barton Street", "Stoney Creek", "industrial", true, [
     ["100A", 4504],
-  ], { sourceUrl: "https://deerfieldbrokerage.com/properties/industrial/87" }),
-  property("retail-acton-market", "Acton Market Place", "Acton", "retail", false),
+  ], { image: "assets/industrial-87.webp" }),
+  property("retail-acton-market", "Acton Market Place", "Acton", "retail", false, [], { image: "assets/retail-acton-market.jpg" }),
   property("retail-65", "Applewood Village Plaza", "Mississauga", "retail", true, [
     ["37", 1025],
-  ], { sourceUrl: "https://deerfieldbrokerage.com/properties/retail/65" }),
-  property("retail-barrys-bay", "Barry's Bay", "Barry's Bay", "retail", false),
-  property("retail-belle-river", "Belle River", "Belle River", "retail", false),
-  property("industrial-brock-rich", "Brock-Rich", "Hamilton", "industrial", false),
+  ], { image: "assets/retail-65.jpg" }),
+  property("retail-barrys-bay", "Barry's Bay", "Barry's Bay", "retail", false, [], { image: "assets/retail-barrys-bay.jpg" }),
+  property("retail-belle-river", "Belle River", "Belle River", "retail", false, [], { image: "assets/retail-belle-river.jpg" }),
+  property("industrial-brock-rich", "Brock-Rich", "Hamilton", "industrial", false, [], { image: "assets/industrial-brock-rich.webp" }),
   property("office-89", "Burlington Office Centre", "Burlington", "office", true, [
     ["202", 250],
     ["207", 150],
@@ -74,30 +71,24 @@ export const properties = Object.freeze([
     ["302", 250],
   ], {
     features: { parking: true },
+    image: "assets/office-89.webp",
     description: "Private move-in-ready office suites on gross lease. Utilities, parking and building services are listed as included.",
-    sourceUrl: "https://deerfieldbrokerage.com/properties/office/89",
   }),
-  property("retail-canada-trust", "Canada Trust Square", "Hamilton", "retail", false),
-  property("retail-80", "Centre Point Plaza", "Hamilton", "retail", true, [], {
-    sourceUrl: "https://deerfieldbrokerage.com/properties/retail/80",
-  }),
-  property("retail-fourth-avenue", "Fourth Avenue", "St. Catharines", "retail", false),
-  property("industrial-glendale", "Glendale Industrial Mall", "Niagara-on-the-Lake", "industrial", false),
-  property("retail-heritage-commons", "Heritage Commons", "Stoney Creek", "retail", false),
-  property("retail-heritage-highlands", "Heritage Highlands", "Stoney Creek", "retail", false),
-  property("retail-newcastle", "Newcastle", "Newcastle", "retail", false),
-  property("retail-notl", "Niagara-on-the-Lake", "Niagara-on-the-Lake", "retail", false),
-  property("retail-78", "Oastler Park Shopping Plaza", "Parry Sound", "retail", true, [], {
-    sourceUrl: "https://deerfieldbrokerage.com/properties/retail/78",
-  }),
-  property("retail-ott-drive", "Ott Drive", "Huntsville", "retail", false),
-  property("retail-picton-plaza", "Picton Shopping Plaza", "Picton", "retail", false),
-  property("industrial-ridley", "Ridley Industrial Mall", "St. Catharines", "industrial", false),
-  property("retail-82", "Spartan Square", "Stoney Creek", "retail", true, [], {
-    sourceUrl: "https://deerfieldbrokerage.com/properties/retail/82",
-  }),
-  property("retail-stone-church", "Stone Church", "Hamilton", "retail", false),
-  property("retail-virgil", "Virgil Holdings", "Niagara-on-the-Lake", "retail", false),
+  property("retail-canada-trust", "Canada Trust Square", "Hamilton", "retail", false, [], { image: "assets/retail-canada-trust.webp" }),
+  property("retail-80", "Centre Point Plaza", "Hamilton", "retail", true, [["8, 9", 2822]], { image: "assets/retail-80.webp" }),
+  property("retail-fourth-avenue", "Fourth Avenue", "St. Catharines", "retail", false, [], { image: "assets/retail-fourth-avenue.webp" }),
+  property("industrial-glendale", "Glendale Industrial Mall", "Niagara-on-the-Lake", "industrial", false, [], { image: "assets/industrial-glendale.webp" }),
+  property("retail-heritage-commons", "Heritage Commons", "Stoney Creek", "retail", false, [], { image: "assets/retail-heritage-commons.webp" }),
+  property("retail-heritage-highlands", "Heritage Highlands", "Stoney Creek", "retail", false, [], { image: "assets/retail-heritage-highlands.webp" }),
+  property("retail-newcastle", "Newcastle", "Newcastle", "retail", false, [], { image: "assets/retail-newcastle.webp" }),
+  property("retail-notl", "Niagara-on-the-Lake", "Niagara-on-the-Lake", "retail", false, [], { image: "assets/retail-notl.webp" }),
+  property("retail-78", "Oastler Park Shopping Plaza", "Parry Sound", "retail", true, [], { image: "assets/retail-78.webp" }),
+  property("retail-ott-drive", "Ott Drive", "Huntsville", "retail", false, [], { image: "assets/retail-ott-drive.webp" }),
+  property("retail-picton-plaza", "Picton Shopping Plaza", "Picton", "retail", false, [], { image: "assets/retail-picton-plaza.webp" }),
+  property("industrial-ridley", "Ridley Industrial Mall", "St. Catharines", "industrial", false, [], { image: "assets/industrial-ridley.webp" }),
+  property("retail-82", "Spartan Square", "Stoney Creek", "retail", true, [], { image: "assets/retail-82.webp" }),
+  property("retail-stone-church", "Stone Church", "Hamilton", "retail", false, [], { image: "assets/retail-stone-church.webp" }),
+  property("retail-virgil", "Virgil Holdings", "Niagara-on-the-Lake", "retail", false, [], { image: "assets/retail-virgil.webp" }),
 ]);
 
 export const cities = Object.freeze([...new Set(properties.map((item) => item.city))].sort());

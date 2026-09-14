@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Browse all Deerfield Brokerage office, industrial, retail, and in-development properties locally in Deal Desk.">
+    <meta name="theme-color" content="#fbfcfa"><title>Properties | Deerfield Deal Desk</title>
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml"><link rel="stylesheet" href="../styles.css">
+    <script>const t=localStorage.getItem("deerfield-theme");document.documentElement.dataset.theme=t?t:(matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light");</script>
+    <script src="../properties.js" type="module"></script>
+  </head>
+  <body class="content-body">
+    <header class="site-header"><div class="nav-shell">
+      <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Open navigation" aria-controls="mobile-navigation" aria-expanded="false"><span></span><span></span><span></span></button>
+      <a class="wordmark" href="../" aria-label="Deerfield Deal Desk home"><span class="mark">D</span><span><strong>Deerfield</strong><small>Deal Desk</small></span></a>
+      <nav class="main-navigation" aria-label="Primary navigation"><a href="../about/">About</a><details class="services-navigation"><summary>Services</summary><div class="services-popover"><div class="services-popover-heading"><p class="eyebrow">What Deerfield does</p><strong>Commercial real estate expertise at every stage.</strong><a href="../services/">View all services →</a></div><a href="../services/#buyer-representation"><strong>Buyer Representation</strong><small>Acquisition support, analysis and negotiation.</small></a><a href="../services/#seller-representation"><strong>Seller Representation</strong><small>Positioning, outreach and transaction management.</small></a><a href="../services/#commercial-leasing"><strong>Commercial Leasing</strong><small>Landlord and tenant solutions.</small></a><a href="../services/#investment-advisory"><strong>Investment Advisory</strong><small>Strategy, timing and portfolio positioning.</small></a></div></details><a class="active-link" href="./" aria-current="page">Properties</a><a class="contact-navigation" href="../contact/">Contact</a></nav>
+      <div class="nav-actions"><a class="nav-cta" href="../#finder">Find a property</a><button class="theme-toggle" id="theme-toggle" type="button" aria-label="Use dark mode"><span id="theme-icon">◐</span></button></div>
+    </div></header>
+    <div class="mobile-navigation-backdrop" id="mobile-navigation-backdrop" hidden></div>
+    <aside class="mobile-navigation" id="mobile-navigation" role="dialog" aria-modal="true" aria-labelledby="mobile-navigation-title" hidden><header><div><p class="eyebrow">Deerfield Brokerage</p><h2 id="mobile-navigation-title">Explore Deerfield</h2></div><button class="menu-close" id="menu-close" type="button" aria-label="Close navigation">×</button></header><nav><a href="../about/"><span>01</span><strong>About</strong><small>Experience, values and team.</small></a><a href="../services/"><span>02</span><strong>Services</strong><small>Representation, leasing and advisory.</small></a><a href="./" aria-current="page"><span>03</span><strong>Properties</strong><small>Browse the full local portfolio.</small></a><a class="mobile-contact-link" href="../contact/"><span>04</span><strong>Contact</strong><small>Build a structured inquiry.</small></a></nav><a class="mobile-finder-link" href="../#finder">Start a property search <span>→</span></a></aside>
+
+    <main class="content-page properties-page">
+      <section class="page-hero split-hero"><div><p class="eyebrow">Our portfolio</p><h1>Commercial properties across <em>Ontario.</em></h1></div><div class="hero-side"><p class="hero-kicker">29 properties. One local, searchable portfolio.</p><p>Review Deerfield’s office, retail, industrial, and in-development properties, then use Deal Desk to build a requirements-based shortlist.</p></div></section>
+      <section class="portfolio-toolbar" aria-label="Property filters"><label class="search-field"><span>Search by property or city</span><input id="portfolio-search" type="search" placeholder="Try Hamilton or Mainway"></label><fieldset><legend>Property type</legend><div class="filter-chips" id="type-filters"><button type="button" data-type="all" aria-pressed="true">All</button><button type="button" data-type="office" aria-pressed="false">Office</button><button type="button" data-type="retail" aria-pressed="false">Retail</button><button type="button" data-type="industrial" aria-pressed="false">Industrial</button></div></fieldset><label class="available-toggle"><input id="available-only" type="checkbox"><span>Available space only</span></label></section>
+      <div class="portfolio-heading"><p id="portfolio-count" aria-live="polite">29 properties</p><p>Portfolio information checked September 14, 2026. Availability can change.</p></div>
+      <section class="portfolio-grid" id="portfolio-grid" aria-label="Deerfield properties"></section>
+      <section class="services-cta"><div><p class="eyebrow">Need a focused shortlist?</p><h2>Rank what matters and compare your best matches.</h2></div><a class="primary-button" href="../#finder">Open Deal Desk →</a></section>
+    </main>
+    <footer class="legal-footer"><div><p><strong>Deerfield Deal Desk</strong> <span>Property portfolio</span></p><p>Property listings are informational only. Availability is subject to change without notice. Information is deemed reliable but not guaranteed.</p><p>Not intended to solicit parties already under contract with another brokerage.</p></div><div class="legal-links"><a href="../contact/">Contact</a><a href="../privacy-policy/">Privacy</a></div></footer>
+  </body>
+</html>

@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Explore Deerfield Brokerage's buyer representation, seller representation, commercial leasing, and investment advisory services.">
+    <meta name="theme-color" content="#fbfcfa">
+    <title>Services | Deerfield Deal Desk</title>
+    <link rel="icon" href="../favicon.svg" type="image/svg+xml">
+    <link rel="stylesheet" href="../styles.css">
+    <script>
+      (() => {
+        const saved = localStorage.getItem("deerfield-theme");
+        const dark = saved ? saved === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+        document.documentElement.dataset.theme = dark ? "dark" : "light";
+      })();
+    </script>
+    <script src="../site-shell.js" type="module"></script>
+  </head>
+  <body class="services-body">
+    <header class="site-header">
+      <div class="nav-shell">
+        <button class="menu-toggle" id="menu-toggle" type="button" aria-label="Open navigation" aria-controls="mobile-navigation" aria-expanded="false">
+          <span aria-hidden="true"></span><span aria-hidden="true"></span><span aria-hidden="true"></span>
+        </button>
+        <a class="wordmark" href="../" aria-label="Deerfield Deal Desk home">
+          <span class="mark" aria-hidden="true">D</span>
+          <span><strong>Deerfield</strong><small>Deal Desk</small></span>
+        </a>
+        <nav class="main-navigation" aria-label="Deerfield Brokerage">
+          <a href="../about/">About</a>
+          <details class="services-navigation active">
+            <summary aria-current="page">Services</summary>
+            <div class="services-popover">
+              <div class="services-popover-heading">
+                <p class="eyebrow">What Deerfield does</p>
+                <strong>Commercial real estate expertise at every stage.</strong>
+                <a href="#services-overview" aria-label="View all Deerfield services">View all services <span aria-hidden="true">↓</span></a>
+              </div>
+              <a href="#buyer-representation" aria-label="Buyer Representation — strategic acquisition support, market analysis and skilled negotiation"><strong>Buyer Representation</strong><small>Strategic acquisition support, market analysis and skilled negotiation.</small></a>
+              <a href="#seller-representation" aria-label="Seller Representation — targeted marketing, qualified buyer networks and transaction management"><strong>Seller Representation</strong><small>Targeted marketing, qualified buyer networks and transaction management.</small></a>
+              <a href="#commercial-leasing" aria-label="Commercial Leasing — connecting landlords and tenants across office, retail and industrial space"><strong>Commercial Leasing</strong><small>Connecting landlords and tenants across office, retail and industrial space.</small></a>
+              <a href="#investment-advisory" aria-label="Investment Advisory — investment strategy, market timing and portfolio positioning"><strong>Investment Advisory</strong><small>Investment strategy, market timing and portfolio positioning.</small></a>
+            </div>
+          </details>
+          <a href="../properties/">Properties</a>
+          <a class="contact-navigation" href="../contact/">Contact</a>
+        </nav>
+        <div class="nav-actions">
+          <a class="nav-cta" href="../#finder">Find a property</a>
+          <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Use dark mode">
+            <span aria-hidden="true" id="theme-icon">◐</span>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <div class="mobile-navigation-backdrop" id="mobile-navigation-backdrop" hidden></div>
+    <aside class="mobile-navigation" id="mobile-navigation" role="dialog" aria-modal="true" aria-labelledby="mobile-navigation-title" hidden>
+      <header>
+        <div>
+          <p class="eyebrow">Deerfield Brokerage</p>
+          <h2 id="mobile-navigation-title">Explore Deerfield</h2>
+        </div>
+        <button class="menu-close" id="menu-close" type="button" aria-label="Close navigation">×</button>
+      </header>
+      <nav aria-label="Mobile navigation">
+        <a href="../about/">
+          <span>01</span><strong>About</strong><small>Over 40 years of commercial real estate excellence across Southwestern Ontario.</small>
+        </a>
+        <a href="./" aria-current="page">
+          <span>02</span><strong>Services</strong><small>Buyer and seller representation, commercial leasing, and investment advisory.</small>
+        </a>
+        <a href="../properties/">
+          <span>03</span><strong>Properties</strong><small>Browse Deerfield’s office, retail, industrial, and in-development portfolio.</small>
+        </a>
+        <a class="mobile-contact-link" href="../contact/">
+          <span>04</span><strong>Contact</strong><small>25 Main Street West, Hamilton · 416-262-6853 · info@deerfieldbrokerage.com</small>
+        </a>
+      </nav>
+      <section class="mobile-service-list" aria-label="Services offered">
+        <p class="eyebrow">On this page</p>
+        <ul>
+          <li><a href="#buyer-representation"><strong>Buyer Representation</strong><span>Acquisition strategy, market analysis and negotiation.</span></a></li>
+          <li><a href="#seller-representation"><strong>Seller Representation</strong><span>Marketing, qualified buyer access and transaction management.</span></a></li>
+          <li><a href="#commercial-leasing"><strong>Commercial Leasing</strong><span>Structured landlord and tenant solutions.</span></a></li>
+          <li><a href="#investment-advisory"><strong>Investment Advisory</strong><span>Market timing and portfolio positioning.</span></a></li>
+        </ul>
+      </section>
+      <a class="mobile-finder-link" href="../#finder">Start a property search <span aria-hidden="true">→</span></a>
+    </aside>
+
+    <main class="services-page">
+      <section class="services-hero" aria-labelledby="services-title">
+        <div>
+          <p class="eyebrow">What we offer</p>
+          <h1 id="services-title">Our <em>Services.</em></h1>
+        </div>
+        <p>Experienced representation for buyers, sellers, landlords, tenants, and commercial real estate investors across Southwestern Ontario.</p>
+      </section>
+
+      <section class="services-overview" id="services-overview" aria-labelledby="services-overview-title">
+        <p class="eyebrow">Full-service brokerage</p>
+        <h2 id="services-overview-title">Helping you achieve your commercial investment goals.</h2>
+        <p>Deerfield combines detailed market knowledge with hands-on transaction support to help buyers and sellers protect value at every stage of a commercial real estate decision.</p>
+        <nav class="service-jump-links" aria-label="Jump to a service">
+          <a href="#buyer-representation"><span>01</span>Buyer Representation</a>
+          <a href="#seller-representation"><span>02</span>Seller Representation</a>
+          <a href="#commercial-leasing"><span>03</span>Commercial Leasing</a>
+          <a href="#investment-advisory"><span>04</span>Investment Advisory</a>
+        </nav>
+      </section>
+
+      <section class="service-details" aria-label="Deerfield service details">
+        <article class="service-detail" id="buyer-representation">
+          <div class="service-number" aria-hidden="true">01</div>
+          <div class="service-copy">
+            <p class="eyebrow">For purchasers</p>
+            <h2>Buyer Representation</h2>
+            <p>A commercial acquisition can be one of the largest commitments a business or investor makes. Deerfield acts as an experienced advocate from the first opportunity review through closing—researching the market, testing properties against your criteria, coordinating diligence, and negotiating the transaction.</p>
+            <ul>
+              <li>Market research and property identification</li>
+              <li>Financial analysis and investment modelling</li>
+              <li>Due diligence coordination and management</li>
+              <li>Offer preparation and negotiation</li>
+              <li>Transaction management through closing</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="service-detail" id="seller-representation">
+          <div class="service-number" aria-hidden="true">02</div>
+          <div class="service-copy">
+            <p class="eyebrow">For owners</p>
+            <h2>Seller Representation</h2>
+            <p>Strong disposition outcomes begin with positioning, not simply placing a listing. Deerfield builds a strategy for the asset, presents it professionally, reaches qualified buyers, and manages offers and negotiations through a coordinated closing process.</p>
+            <ul>
+              <li>Comprehensive property valuation and pricing strategy</li>
+              <li>Targeted marketing and buyer outreach</li>
+              <li>Professional presentation and listing management</li>
+              <li>Offer review, negotiation, and counter-offer strategy</li>
+              <li>End-to-end transaction management</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="service-detail" id="commercial-leasing">
+          <div class="service-number" aria-hidden="true">03</div>
+          <div class="service-copy">
+            <p class="eyebrow">For landlords and tenants</p>
+            <h2>Commercial Leasing</h2>
+            <p>Finding the right tenant—or the right business location—takes market knowledge, negotiation skill, and a broad network. Deerfield represents landlords and tenants across Southwestern Ontario and connects operational needs with suitable office, retail, and industrial opportunities.</p>
+            <ul>
+              <li>Office, retail, and industrial leasing</li>
+              <li>Landlord representation and tenant sourcing</li>
+              <li>Tenant representation and site selection</li>
+              <li>Lease negotiation and renewal advisory</li>
+              <li>Market comparables and rental-rate analysis</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="service-detail" id="investment-advisory">
+          <div class="service-number" aria-hidden="true">04</div>
+          <div class="service-copy">
+            <p class="eyebrow">For investors</p>
+            <h2>Investment Advisory</h2>
+            <p>Commercial property decisions reward a long-term view, disciplined timing, and clear risk-and-return analysis. Deerfield supports first-time and experienced investors with the market intelligence and analytical rigour needed to build, assess, and reposition a portfolio.</p>
+            <ul>
+              <li>Portfolio assessment and strategy development</li>
+              <li>Market entry and exit timing analysis</li>
+              <li>Property performance and asset-management guidance</li>
+              <li>Capitalization-rate analysis and return modelling</li>
+              <li>1031 exchange and disposition planning</li>
+            </ul>
+          </div>
+        </article>
+      </section>
+
+      <section class="services-cta" aria-labelledby="services-cta-title">
+        <div>
+          <p class="eyebrow">Find your space</p>
+          <h2 id="services-cta-title">Turn your requirements into a focused shortlist.</h2>
+        </div>
+        <a class="primary-button" href="../#finder">Start a property search <span aria-hidden="true">→</span></a>
+      </section>
+    </main>
+
+    <footer class="legal-footer">
+      <div>
+        <p><strong>Deerfield Deal Desk</strong> <span>Commercial real estate services</span></p>
+        <p>Property listings and leasing opportunities are for informational purposes only. Availability is subject to change without notice and does not guarantee a tenancy or transaction. Information is deemed reliable but not guaranteed.</p>
+        <p>Not intended to solicit buyers, sellers, landlords, or tenants already under contract with another brokerage.</p>
+      </div>
+      <div class="legal-links">
+        <a href="../#finder">Find a property</a>
+        <a href="../privacy-policy/">Privacy</a>
+      </div>
+    </footer>
+  </body>
+</html>

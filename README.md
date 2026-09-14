@@ -12,6 +12,8 @@ Guided commercial-property discovery for Deerfield Brokerage. Prospects can sepa
 - device-aware light/dark theme with a persistent manual override
 - responsive keyboard-accessible interface
 - official About, Services, Properties, and Contact navigation with a descriptive mobile drawer
+- local About, Services, portfolio, property-detail, Contact, and Privacy pages with no outbound Deerfield website links
+- all 29 public portfolio photographs packaged as local site assets
 - WebMCP tools for staging a search and displaying matches
 - owner-private zero-cost Sites deployment configuration
 
@@ -20,7 +22,7 @@ Guided commercial-property discovery for Deerfield Brokerage. Prospects can sepa
 The production artifact is the zero-build static site declared in `.openai/hosting.json`.
 
 ```powershell
-node -e "const http=require('http'),fs=require('fs'),path=require('path');http.createServer((q,s)=>{let p=path.join('dist',q.url==='/'?'index.html':q.url.split('?')[0]);fs.readFile(p,(e,d)=>{s.statusCode=e?404:200;s.end(e?'Not found':d)})}).listen(4173,'127.0.0.1')"
+python -m http.server 4173 --directory dist
 ```
 
 Open `http://127.0.0.1:4173`.
