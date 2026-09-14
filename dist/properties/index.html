@@ -20,7 +20,17 @@
 
     <main class="content-page properties-page">
       <section class="page-hero split-hero"><div><p class="eyebrow">Our portfolio</p><h1>Commercial properties across <em>Ontario.</em></h1></div><div class="hero-side"><p class="hero-kicker">29 properties. One local, searchable portfolio.</p><p>Review Deerfield’s office, retail, industrial, and in-development properties, then use Deal Desk to build a requirements-based shortlist.</p></div></section>
-      <section class="portfolio-toolbar" aria-label="Property filters"><label class="search-field"><span>Search by property or city</span><input id="portfolio-search" type="search" placeholder="Try Hamilton or Mainway"></label><fieldset><legend>Property type</legend><div class="filter-chips" id="type-filters"><button type="button" data-type="all" aria-pressed="true">All</button><button type="button" data-type="office" aria-pressed="false">Office</button><button type="button" data-type="retail" aria-pressed="false">Retail</button><button type="button" data-type="industrial" aria-pressed="false">Industrial</button></div></fieldset><label class="available-toggle"><input id="available-only" type="checkbox"><span>Available space only</span></label></section>
+      <section class="portfolio-toolbar" aria-label="Property filters">
+        <label class="search-field"><span>Property name</span><input id="portfolio-search" type="search" placeholder="Try Mainway or Applewood" autocomplete="off"></label>
+        <label class="search-field"><span>City</span><input id="city-filter" type="search" list="portfolio-cities" placeholder="Start typing a city" autocomplete="address-level2"><datalist id="portfolio-cities"></datalist></label>
+        <fieldset><legend>Property type</legend><div class="filter-chips" id="type-filters"><button type="button" data-type="all" aria-pressed="true">All</button><button type="button" data-type="office" aria-pressed="false">Office</button><button type="button" data-type="retail" aria-pressed="false">Retail</button><button type="button" data-type="industrial" aria-pressed="false">Industrial</button></div></fieldset>
+        <label class="available-toggle"><input id="available-only" type="checkbox"><span>Available space only</span></label>
+      </section>
+      <section class="feature-filter-panel" aria-labelledby="feature-filter-title">
+        <div class="feature-filter-heading"><div><p class="eyebrow">Space features</p><h2 id="feature-filter-title">What does the property need?</h2><p>Select any features to filter the portfolio. Listings with unconfirmed public data stay visible for broker verification unless you turn that option off.</p></div><button class="clear-filter-button" id="clear-filters" type="button">Clear all filters</button></div>
+        <div class="feature-filter-chips" id="feature-filters" aria-label="Feature filters"></div>
+        <label class="unknown-toggle"><input id="include-unknown" type="checkbox" checked><span><strong>Include listings that need confirmation</strong><small>Recommended because most public listings do not publish every building feature.</small></span></label>
+      </section>
       <div class="portfolio-heading"><p id="portfolio-count" aria-live="polite">29 properties</p><p>Portfolio information checked September 14, 2026. Availability can change.</p></div>
       <section class="portfolio-grid" id="portfolio-grid" aria-label="Deerfield properties"></section>
       <section class="services-cta"><div><p class="eyebrow">Need a focused shortlist?</p><h2>Rank what matters and compare your best matches.</h2></div><a class="primary-button" href="../#finder">Open Deal Desk →</a></section>
