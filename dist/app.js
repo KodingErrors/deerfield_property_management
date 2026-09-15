@@ -181,19 +181,14 @@ function renderStepTwo() {
     '<h2>Where would you like to be?</h2>' +
     '<p class="help">Choose as many markets as you want, or leave all unselected to see every market.</p>' +
     '<div class="city-grid">' + cityChoices + '</div>' +
-    '<fieldset class="field-panel"><legend>How strict is location?</legend>' +
-      '<div class="radio-stack">' +
-        radioOption("hard", "Only these locations", "Exclude properties outside your selected markets.") +
-        radioOption("preference", "Prefer these locations", "Keep other markets in the results and rank selected ones higher.") +
-      '</div>' +
+    '<fieldset class="field-panel"><legend>Location strictness</legend>' +
+      '<label class="option-card"><input type="checkbox" id="location-only"' + (search.locationMode === "hard" ? " checked" : "") + '>' +
+        '<span><strong>Only show these locations</strong>' +
+        '<small>Leave out properties outside the markets you picked. Unchecked, other markets stay in the results and your markets rank higher.</small></span>' +
+      '</label>' +
     '</fieldset>' +
     wizardActions(true, "Continue");
   finderFrame("Location", "", body);
-}
-
-function radioOption(value, label, description) {
-  return '<label class="radio-card"><input type="radio" name="location-mode" value="' + value + '"' +
-    (search.locationMode === value ? " checked" : "") + '><span><strong>' + label + '</strong><small>' + description + '</small></span></label>';
 }
 
 function renderStepThree() {
@@ -289,7 +284,7 @@ function captureCurrentStep() {
   }
   if (step === 2) {
     search.cities = [...document.querySelectorAll('input[name="city"]:checked')].map((input) => input.value);
-    search.locationMode = document.querySelector('input[name="location-mode"]:checked')?.value || "preference";
+    search.locationMode = document.querySelector("#location-only")?.checked ? "hard" : "preference";
   }
   if (step === 4) {
     search.moveIn = document.querySelector("#move-in")?.value || "";

@@ -268,16 +268,16 @@ h2 { max-width: 640px; margin: 0; font-size: clamp(26px, 2.6vw, 34px); line-heig
 .check-card input:checked + span { border-color: var(--primary); background: var(--soft); color: var(--soft-ink); }
 .check-card input:checked + span::before { content: "✓"; display: grid; place-items: center; background: var(--primary); border-color: var(--primary); color: var(--primary-ink); font-size: 12px; }
 .check-card input:focus-visible + span { outline: 2px solid var(--primary); outline-offset: 2px; }
-.radio-stack { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: clamp(7px, 1vh, 10px); }
-.radio-card { position: relative; }
-.radio-card input { position: absolute; opacity: 0; pointer-events: none; }
-.radio-card > span { display: grid; grid-template-columns: 1fr; height: 100%; padding: clamp(11px, 1.5vh, 15px) 15px clamp(11px, 1.5vh, 15px) 43px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg); cursor: pointer; }
-.radio-card > span::before { content: ""; position: absolute; left: 15px; top: clamp(14px, 1.9vh, 19px); width: 17px; height: 17px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); }
-.radio-card strong { font-size: 15px; }
-.radio-card small { margin-top: 4px; color: var(--muted); line-height: 1.5; }
-.radio-card input:checked + span { border-color: var(--primary); background: var(--soft); color: var(--soft-ink); }
-.radio-card input:checked + span::before { border: 5px solid var(--primary); }
-.radio-card input:focus-visible + span { outline: 2px solid var(--primary); outline-offset: 2px; }
+/* A labelled checkbox card: the same tick as the city tiles, with a description line. */
+.option-card { position: relative; display: block; }
+.option-card input { position: absolute; opacity: 0; pointer-events: none; }
+.option-card > span { display: grid; grid-template-columns: 1fr; padding: clamp(11px, 1.5vh, 15px) 15px clamp(11px, 1.5vh, 15px) 43px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg); cursor: pointer; }
+.option-card > span::before { content: ""; position: absolute; left: 15px; top: clamp(14px, 1.9vh, 19px); width: 17px; height: 17px; border: 1px solid var(--border); border-radius: var(--radius-sm); background: var(--surface); }
+.option-card strong { font-size: 15px; }
+.option-card small { margin-top: 4px; color: var(--muted); line-height: 1.5; }
+.option-card input:checked + span { border-color: var(--primary); background: var(--soft); color: var(--soft-ink); }
+.option-card input:checked + span::before { content: "✓"; display: grid; place-items: center; background: var(--primary); border-color: var(--primary); color: var(--primary-ink); font-size: 12px; }
+.option-card input:focus-visible + span { outline: 2px solid var(--primary); outline-offset: 2px; }
 .priority-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(290px, 1fr)); gap: clamp(7px, 1vh, 10px); margin-top: clamp(12px, 2vh, 28px); }
 .priority-row { display: grid; grid-template-columns: minmax(0, 1fr) 118px; align-items: center; gap: 12px; padding: clamp(9px, 1.3vh, 14px); border: 1px solid var(--border); border-radius: var(--radius); background: var(--bg); }
 .priority-row > label:first-child { display: flex; gap: 12px; align-items: flex-start; cursor: pointer; }
@@ -438,7 +438,6 @@ h2 { max-width: 640px; margin: 0; font-size: clamp(26px, 2.6vw, 34px); line-heig
 }
 @media (max-width: 760px) {
   .number-grid, .city-grid { grid-template-columns: 1fr 1fr; }
-  .radio-stack { grid-template-columns: 1fr; }
   .results-shell { padding-top: 48px; }
   .results-header { display: block; }
   .results-actions { justify-content: flex-start; margin-top: 25px; }
@@ -807,7 +806,7 @@ h2 { max-width: 640px; margin: 0; font-size: clamp(26px, 2.6vw, 34px); line-heig
 .choice:hover { box-shadow: 0 6px 16px rgb(var(--shadow) / 10%); }
 .choice-icon { transition: transform .2s ease, background .2s ease; }
 .choice:hover .choice-icon { transform: scale(1.08); }
-.availability-cell span, .feature-filter-chips button, .radio-card { transition: background .15s ease, border-color .15s ease, color .15s ease; }
+.availability-cell span, .feature-filter-chips button, .option-card > span { transition: background .15s ease, border-color .15s ease, color .15s ease; }
 
 /* Entering content rises in once, only in response to the visitor moving forward. */
 @keyframes rise-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
