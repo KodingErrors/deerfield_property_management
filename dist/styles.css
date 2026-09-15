@@ -502,8 +502,11 @@ h2 { max-width: 640px; margin: 0; font-size: clamp(26px, 2.6vw, 34px); line-heig
    themes: white on the dark-green band in light mode, deep green on the light-green band in dark. */
 .services-cta .primary-button, .detail-actions .primary-button { flex: 0 0 auto; background: var(--primary-ink); color: var(--primary); text-decoration: none; }
 .services-cta .primary-button:hover, .detail-actions .primary-button:hover { background: color-mix(in srgb, var(--primary-ink) 86%, var(--primary)); color: var(--primary); }
-.cta-pair { display: flex; align-items: center; flex-wrap: wrap; gap: 18px; }
-.secondary-link { color: inherit; font-size: 14px; font-weight: 800; text-decoration: underline; text-underline-offset: 4px; }
+/* The band's actions stay on one line beside the heading and never shrink into a wrap;
+   the text link is sized as a 44px row so it centres on the button. */
+.cta-pair { display: flex; flex: 0 0 auto; align-items: center; gap: 22px; white-space: nowrap; }
+.services-cta > div:first-child, .detail-actions > div:first-child { min-width: 0; }
+.secondary-link { display: inline-flex; align-items: center; min-height: 44px; color: inherit; font-size: 15px; font-weight: 600; text-decoration: underline; text-underline-offset: 4px; }
 
 .services-overview { max-width: 1060px; padding: clamp(70px, 9vw, 125px) 0; }
 .services-overview > p:not(.eyebrow) { max-width: 740px; color: var(--muted); font-size: 17px; line-height: 1.8; }
@@ -740,6 +743,7 @@ h2 { max-width: 640px; margin: 0; font-size: clamp(26px, 2.6vw, 34px); line-heig
   .service-detail { grid-template-columns: 1fr; }
   .service-number { font-size: 65px; }
   .services-cta, .detail-actions { display: grid; }
+  .cta-pair { flex-wrap: wrap; white-space: normal; gap: 12px 22px; }
   .property-detail-visual { min-height: 310px; }
   .contact-details { position: static; }
 }
