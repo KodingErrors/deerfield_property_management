@@ -175,7 +175,10 @@ Other repo conventions:
 - Callback scheduling (`components/callback-picker.tsx`) is pinned to `America/Toronto` business
   hours and computed from `Intl` parts, not local time. Two input modes write the same Set of
   `YYYY-MM-DD|HH:MM` keys — a drag-to-paint grid and a range builder ("list view") — so either can
-  be edited without the other losing state. `mode` is `"auto"` on the contact page (grid for a
+  be edited without the other losing state. The picker shows **one week at a time**
+  (`callbackDays(weekOffset)`, up to `CALLBACK_WEEKS`), so the summary chips and the email lines
+  must be built from `daysFromSelection(selected)` — passing only the visible week silently drops
+  windows chosen in another week, which `tests/callback-windows.test.mjs` pins. `mode` is `"auto"` on the contact page (grid for a
   mouse, list for a thumb, following `matchMedia("(pointer: coarse), (max-width: 720px)")` until the
   visitor overrides it) and `"list"` in the wizard's modal, whose form column is too narrow for the
   grid to lead. Pointer painting calls `preventDefault()`, so a cell's `onChange` only fires for

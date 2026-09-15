@@ -1,12 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { availabilityEmailLines, CallbackPicker } from "./callback-picker";
 import { PhoneInput } from "./phone-input";
 import { SendButton, type SendState } from "./send-button";
 import { SentConfirmation } from "./sent-confirmation";
 import { useDeliveryConfig } from "./use-delivery-config";
-import { callbackDays } from "@/lib/callback-schedule";
 import { properties, type Property } from "@/lib/catalog";
 import { BODY_MAX_LENGTH, SUBJECT_MAX_LENGTH, enforceBody, enforceSubject } from "@/lib/inquiry-format.js";
 
@@ -40,7 +39,6 @@ export function ContactForm() {
   const form = useRef<HTMLFormElement>(null);
   const reviewDialog = useRef<HTMLDialogElement>(null);
   const delivery = useDeliveryConfig();
-  const days = useMemo(callbackDays, []);
 
   const [selectedIds, setSelectedIds] = useState<ReadonlySet<string>>(new Set());
   const [menuOpen, setMenuOpen] = useState(false);
@@ -97,7 +95,7 @@ export function ContactForm() {
     const element = form.current!;
     if (!element.reportValidity()) return;
     const values = readValues(element);
-    const email = buildInquiry(values, selected, availabilityEmailLines(availability, days));
+    const email = buildInquiry(values, selected, availabilityEmailLines(availability));
     setPending({ ...values, propertyIds: [...selectedIds], availability: [...availability] });
     setSubject(enforceSubject(email.subject));
     setBody(email.body);

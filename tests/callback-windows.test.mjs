@@ -3,6 +3,8 @@ import assert from "node:assert/strict";
 import {
   SLOT_MINUTES,
   availabilityLines,
+  daysFromSelection,
+  describeDay,
   mergedWindows,
   slotValue,
   slotsBetween,
@@ -86,4 +88,40 @@ test("slotsBetween covers the range but stops before the end time", () => {
     "2026-09-15|10:00",
   ]);
   assert.deepEqual(slotsBetween("2026-09-15", 9 * 60, 9 * 60), []);
+});
+
+test("a day key describes itself without knowing which week is on screen", () => {
+  assert.deepEqual(describeDay("2026-09-15"), {
+    key: "2026-09-15",
+    long: "Tuesday, September 15",
+    shortDay: "Tue",
+    shortDate: "Sep 15",
+  });
+  // Parsed as UTC, so a visitor west of Greenwich does not see the previous day.
+  assert.equal(describeDay("2026-01-01").shortDate, "Jan 1");
+});
+
+test("a selection spanning weeks describes every day it touches, in order", () => {
+  const selected = selection(
+    "2026-09-29|10:00",
+    "2026-09-16|09:00",
+    "2026-09-16|09:30",
+    "2026-09-22|14:00",
+  );
+  assert.deepEqual(daysFromSelection(selected).map((day) => day.key), ["2026-09-16", "2026-09-22", "2026-09-29"]);
+  assert.deepEqual(daysFromSelection(selection()), []);
+});
+
+test("email lines cover windows chosen in a later week, not just the visible one", () => {
+  // The picker shows one week at a time; the email must not quietly drop the rest.
+  const selected = selection(
+    ...slotsBetween("2026-09-16", 9 * 60, 10 * 60),
+    ...slotsBetween("2026-09-24", 14 * 60, 15 * 60),
+  );
+  assert.deepEqual(availabilityLines(selected, daysFromSelection(selected), times), [
+    "- Wednesday, September 16: 9:00 AM – 10:00 AM",
+    "- Thursday, September 24: 2:00 PM – 3:00 PM",
+  ]);
+  // Passing only the first week is exactly the bug the helper above avoids.
+  assert.deepEqual(availabilityLines(selected, days, times), ["- Wednesday, September 16: 9:00 AM – 10:00 AM"]);
 });

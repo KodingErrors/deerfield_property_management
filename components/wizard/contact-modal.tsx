@@ -1,12 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { availabilityEmailLines, CallbackPicker } from "../callback-picker";
 import { PhoneInput } from "../phone-input";
 import { SendButton, type SendState } from "../send-button";
 import { copyText } from "../use-toast";
 import type { DeliveryConfig } from "../use-delivery-config";
-import { callbackDays } from "@/lib/callback-schedule";
 import type { Match, Search } from "@/lib/catalog";
 import { BODY_MAX_LENGTH, SUBJECT_MAX_LENGTH, enforceBody, enforceSubject } from "@/lib/inquiry-format.js";
 import { buildInquiry, CONTACT_EMAIL, type ContactValues } from "@/lib/search";
@@ -70,8 +69,7 @@ function readForm(form: HTMLFormElement | null, availability: string[]): Contact
 
 function ContactPacket({ search, matches, delivery, availability, onAvailabilityChange, onSent, showToast, close }: PacketProps) {
   const form = useRef<HTMLFormElement>(null);
-  const days = useMemo(callbackDays, []);
-  const availabilityLines = availabilityEmailLines(availability, days);
+  const availabilityLines = availabilityEmailLines(availability);
   // Snapshot of the form, refreshed on every input so the packet follows it.
   const [values, setValues] = useState<ContactValues>(() => ({
     name: "", email: "", phone: "", company: "", intendedUse: search.intendedUse, notes: search.notes,

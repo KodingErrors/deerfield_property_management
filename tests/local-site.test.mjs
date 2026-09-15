@@ -84,6 +84,20 @@ test("callback availability offers both a grid and a range builder", () => {
   assert.match(read("components/wizard/contact-modal.tsx"), /<CallbackPicker[^>]*mode="list"/s);
 });
 
+test("the callback picker can page a week at a time", () => {
+  const picker = read("components/callback-picker.tsx");
+  for (const id of ["callback-week-previous", "callback-week-next"]) {
+    assert.match(picker, new RegExp(`id="${id}"`), `missing #${id}`);
+  }
+  assert.match(picker, /callbackDays\(week\)/, "the visible week must drive the day list");
+  // The summary and the email are built from the selection, not from the week on screen,
+  // or a window chosen in another week would silently vanish.
+  assert.match(picker, /mergedWindows\(selected, daysFromSelection\(selected\)/);
+  assert.match(picker, /availabilityLines\(selected, daysFromSelection\(selected\)/);
+  assert.doesNotMatch(read("components/contact-form.tsx"), /availabilityEmailLines\(availability, /);
+  assert.doesNotMatch(read("components/wizard/contact-modal.tsx"), /availabilityEmailLines\(availability, /);
+});
+
 test("the review dialogs show the delivery envelope, not a hardcoded address", () => {
   const contact = read("components/contact-form.tsx");
   for (const id of ["review-to", "review-from", "review-reply-to", "review-subject-final"]) {
