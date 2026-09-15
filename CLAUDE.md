@@ -97,7 +97,12 @@ explain rankings, so reasons are user-facing copy.
 
 1. **Wizard → `mailto:`** (`dist/app.js`): builds a draft and opens the visitor's mail client at
    `info@deerfieldbrokerage.com`. It falls back to copy-to-clipboard past ~7,800 characters. This
-   path never claims an inquiry was sent — keep that wording.
+   path never claims an inquiry was sent — keep that wording. The review modal's right-hand
+   pane is an editor (`#packet-subject`, `#packet-body`), not a read-only preview: it is
+   regenerated from the form until the visitor edits it (`packetEdited`), after which their
+   text wins and only "Reset to generated draft" resyncs it. All three actions — send, open in
+   email app, copy — read `finalInquiry()`, i.e. the editor's text through `enforceSubject` /
+   `enforceBody`, never `buildInquiry()` directly.
 2. **Contact page → Worker** (`dist/contact.js` → `worker/index.js`): posts JSON to
    `/api/inquiries`, which relays via Resend to `INQUIRY_RECIPIENT` (falling back to
    `DEFAULT_RECIPIENT`) with a forced `[DEERFIELD]` subject prefix and the visitor's address as

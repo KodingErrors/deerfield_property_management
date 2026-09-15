@@ -398,9 +398,17 @@ h2 { max-width: 570px; margin: 0; font-size: clamp(39px, 4.3vw, 61px); line-heig
 .selected-properties input { width: 18px; height: 18px; accent-color: var(--primary); }
 .selected-properties strong, .selected-properties small { display: block; }
 .selected-properties small, .selected-properties p { margin-top: 2px; color: var(--muted); font-size: 12px; }
-.packet-preview { background: var(--bg); }
+.packet-preview { display: flex; flex-direction: column; background: var(--bg); }
 .packet-preview .eyebrow { margin-bottom: 15px; }
-.packet-preview pre { margin: 0; white-space: pre-wrap; color: var(--text); font: 400 13px/1.6 ui-monospace, SFMono-Regular, Consolas, monospace; }
+.packet-preview .review-envelope { flex: none; }
+/* The editor fills whatever height the pane has, so the message is never a tiny box. */
+.packet-editor { display: flex; flex: 1 1 auto; flex-direction: column; min-height: 0; }
+.packet-editor .wide-field { margin-top: 14px; }
+.packet-body-field { display: flex; flex: 1 1 auto; flex-direction: column; min-height: 0; }
+.packet-body-field textarea { flex: 1 1 auto; min-height: 260px; padding-top: 12px; font: 400 13px/1.6 ui-monospace, SFMono-Regular, Consolas, monospace; }
+.packet-editor-status { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 14px; margin: 10px 0 0; color: var(--muted); font-size: 12px; line-height: 1.45; }
+.link-button { padding: 0; border: 0; background: none; color: var(--primary); font: inherit; font-weight: 750; text-decoration: underline; text-underline-offset: 2px; cursor: pointer; }
+.link-button:hover { color: var(--text); }
 .toast { position: fixed; z-index: 80; left: 50%; bottom: 24px; max-width: calc(100% - 28px); padding: 13px 17px; border-radius: 12px; background: var(--text); color: var(--bg); box-shadow: 0 12px 40px rgb(0 0 0 / 22%); opacity: 0; transform: translate(-50%, 15px); pointer-events: none; transition: .2s ease; font-size: 14px; font-weight: 700; }
 .toast.visible { opacity: 1; transform: translate(-50%, 0); }
 .legal-footer { display: flex; justify-content: space-between; gap: 35px; width: min(1440px, calc(100% - 36px)); margin: 0 auto; padding: 34px 0 44px; border-top: 1px solid var(--border); color: var(--muted); font-size: 11px; line-height: 1.55; }

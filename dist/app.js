@@ -1,6 +1,6 @@
 import { cities, featureSets, properties, SOURCE_CHECKED_AT } from "./data.js";
 import { formatNumber, matchProperties } from "./matcher.js";
-import { DEFAULT_RECIPIENT, enforceBody, enforceSubject } from "./inquiry-format.js";
+import { BODY_MAX_LENGTH, DEFAULT_RECIPIENT, SUBJECT_MAX_LENGTH, enforceBody, enforceSubject } from "./inquiry-format.js";
 import { bindPhoneFormatting } from "./phone-format.js";
 
 const STORAGE_KEY = "deerfield-search-v1";
@@ -588,7 +588,7 @@ function openContact() {
   const matches = selectedMatches();
   contactContent.innerHTML =
     '<header class="modal-header"><div><p class="eyebrow">Review before contacting</p><h2 id="contact-title">Your requirement packet</h2>' +
-    '<p>Everything remains editable. Send it straight to Deerfield, or open it in your own email app.</p></div>' +
+    '<p>Everything remains editable, including the email itself. Send it straight to Deerfield, or open it in your own email app.</p></div>' +
     '<button class="icon-button" type="button" data-close="contact" aria-label="Close contact form">×</button></header>' +
     '<div class="contact-layout"><form id="contact-form" novalidate>' +
       '<div class="form-grid">' +
@@ -605,18 +605,24 @@ function openContact() {
           : '<p>No property selected. Deerfield will receive your requirements only.</p>') +
       '</fieldset>' +
       '<p class="form-error" id="contact-error" role="alert"></p>' +
-    '</form><aside class="packet-preview"><p class="eyebrow">Email preview</p>' +
+    '</form><aside class="packet-preview"><p class="eyebrow">Your email — review and edit</p>' +
       '<dl class="review-envelope" id="wizard-envelope">' +
         '<div><dt>To</dt><dd id="wizard-to">' + escapeHtml(deliveryConfig.recipient) + '</dd></div>' +
         '<div><dt>From</dt><dd id="wizard-from">' + escapeHtml(deliveryConfig.from || "Deerfield Deal Desk") + '</dd></div>' +
         '<div><dt>Reply-To</dt><dd id="wizard-reply-to">—</dd></div>' +
         '<div><dt>Subject</dt><dd id="wizard-subject">—</dd></div>' +
-      '</dl><pre id="packet-preview"></pre></aside></div>' +
+      '</dl><div class="packet-editor" id="packet-editor">' +
+        '<label class="wide-field"><span>Subject</span><input id="packet-subject" maxlength="' + SUBJECT_MAX_LENGTH + '"></label>' +
+        '<label class="wide-field packet-body-field"><span>Email message</span><textarea id="packet-body" rows="18" maxlength="' + BODY_MAX_LENGTH + '" spellcheck="true"></textarea></label>' +
+        '<p class="packet-editor-status" id="packet-editor-status"><span>Drafted from your answers. Edit it freely — the form stops overwriting it once you do.</span>' +
+        '<button class="link-button" type="button" data-reset-packet hidden>Reset to generated draft</button></p>' +
+      '</div></aside></div>' +
     '<footer class="modal-footer"><p class="form-status" id="wizard-send-status" aria-live="polite"></p>' +
     '<button class="secondary-button" type="button" data-copy-inquiry>Copy inquiry</button>' +
     '<button class="secondary-button" type="button" data-open-email>Open in email app <span aria-hidden="true">↗</span></button>' +
     '<button class="primary-button" type="button" data-send-inquiry>Send inquiry →</button></footer>';
   bindPhoneFormatting(document.querySelector("#contact-phone"));
+  packetEdited = false;
   updatePacketPreview();
   contactDialog.showModal();
   document.querySelector("#contact-name")?.focus();
@@ -710,10 +716,44 @@ function timingLabel(value) {
   }[value] || "";
 }
 
+// The editor is seeded from the form and follows it until the visitor edits the email
+// directly; from then on their wording wins and only an explicit reset regenerates it.
+let packetEdited = false;
+
+function packetEditor() {
+  const subject = document.querySelector("#packet-subject");
+  const body = document.querySelector("#packet-body");
+  return subject && body ? { subject, body } : null;
+}
+
+// What will actually be sent, copied or opened: the editor's text, run through the same
+// limits the Worker applies, so the preview stays faithful.
+function finalInquiry() {
+  const editor = packetEditor();
+  const generated = buildInquiry(contactValues());
+  if (!editor) return { subject: enforceSubject(generated.subject), body: enforceBody(generated.body) };
+  const subject = editor.subject.value.trim() || generated.subject;
+  return { subject: enforceSubject(subject), body: enforceBody(editor.body.value) };
+}
+
 function updatePacketPreview() {
-  const preview = document.querySelector("#packet-preview");
-  if (preview) preview.textContent = buildInquiry(contactValues()).body;
+  const editor = packetEditor();
+  if (editor && !packetEdited) {
+    const generated = buildInquiry(contactValues());
+    editor.subject.value = generated.subject;
+    editor.body.value = generated.body;
+  }
   updateEnvelope();
+}
+
+function markPacketEdited(edited) {
+  packetEdited = edited;
+  const status = document.querySelector("#packet-editor-status span");
+  const reset = document.querySelector("[data-reset-packet]");
+  if (status) status.textContent = edited
+    ? "You have customised this email. Form changes no longer update it."
+    : "Drafted from your answers. Edit it freely — the form stops overwriting it once you do.";
+  if (reset) reset.hidden = !edited;
 }
 
 function updateEnvelope() {
@@ -722,7 +762,7 @@ function updateEnvelope() {
   document.querySelector("#wizard-to").textContent = deliveryConfig.recipient;
   document.querySelector("#wizard-from").textContent = deliveryConfig.from || "Deerfield Deal Desk";
   document.querySelector("#wizard-reply-to").textContent = values.email || "—";
-  document.querySelector("#wizard-subject").textContent = enforceSubject(buildInquiry(values).subject);
+  document.querySelector("#wizard-subject").textContent = finalInquiry().subject;
 }
 
 async function sendWizardInquiry() {
@@ -736,7 +776,7 @@ async function sendWizardInquiry() {
     return;
   }
   error.textContent = "";
-  const packet = buildInquiry(values);
+  const packet = finalInquiry();
   button.disabled = true;
   button.textContent = "Sending…";
   status.textContent = "Sending your inquiry securely…";
@@ -747,8 +787,8 @@ async function sendWizardInquiry() {
       body: JSON.stringify({
         name: values.name,
         email: values.email,
-        subject: enforceSubject(packet.subject),
-        body: enforceBody(packet.body),
+        subject: packet.subject,
+        body: packet.body,
         submissionId: crypto.randomUUID(),
       }),
     });
@@ -764,15 +804,29 @@ async function sendWizardInquiry() {
   }
 }
 
-contactContent.addEventListener("input", updatePacketPreview);
-contactContent.addEventListener("change", updatePacketPreview);
+function onContactInput(event) {
+  if (event.target.closest("#packet-editor")) {
+    if (!packetEdited) markPacketEdited(true);
+    updateEnvelope();
+    return;
+  }
+  updatePacketPreview();
+}
+contactContent.addEventListener("input", onContactInput);
+contactContent.addEventListener("change", onContactInput);
 contactContent.addEventListener("click", async (event) => {
   if (event.target.closest('[data-close="contact"]')) {
     contactDialog.close();
     return;
   }
+  if (event.target.closest("[data-reset-packet]")) {
+    markPacketEdited(false);
+    updatePacketPreview();
+    document.querySelector("#packet-body")?.focus();
+    return;
+  }
   if (event.target.closest("[data-copy-inquiry]")) {
-    const packet = buildInquiry(contactValues());
+    const packet = finalInquiry();
     await copyText("Subject: " + packet.subject + "\n\n" + packet.body);
     return;
   }
@@ -789,7 +843,7 @@ contactContent.addEventListener("click", async (event) => {
       return;
     }
     error.textContent = "";
-    const packet = buildInquiry(values);
+    const packet = finalInquiry();
     const mailto = "mailto:" + CONTACT_EMAIL + "?subject=" + encodeURIComponent(packet.subject) + "&body=" + encodeURIComponent(packet.body);
     if (mailto.length > 7800) {
       await copyText(packet.body);
