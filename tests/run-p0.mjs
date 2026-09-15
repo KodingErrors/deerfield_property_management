@@ -1,5 +1,6 @@
 import "./matcher.test.mjs";
 import "./callback-windows.test.mjs";
 import "./phone-format.test.mjs";
+import "./send-button.test.mjs";
 import "./local-site.test.mjs";
 import "./worker.test.mjs";

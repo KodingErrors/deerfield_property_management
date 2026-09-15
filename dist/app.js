@@ -2,7 +2,7 @@ import { cities, featureSets, properties, SOURCE_CHECKED_AT } from "./data.js";
 import { formatNumber, matchProperties } from "./matcher.js";
 import { BODY_MAX_LENGTH, DEFAULT_RECIPIENT, SUBJECT_MAX_LENGTH, enforceBody, enforceSubject } from "./inquiry-format.js";
 import { bindPhoneFormatting } from "./phone-format.js";
-import { setSendState, settleSendState } from "./send-button.js";
+import { setSendState, showSentConfirmation } from "./send-button.js";
 
 const STORAGE_KEY = "deerfield-search-v1";
 const THEME_KEY = "deerfield-theme";
@@ -797,13 +797,15 @@ async function sendWizardInquiry() {
     const result = await response.json().catch(() => ({}));
     if (!response.ok) throw new Error(result.error || "The email could not be sent. Please try again.");
     status.textContent = "Your inquiry was sent to Deerfield successfully.";
-    showToast("Your inquiry was sent to Deerfield.");
     sent = true;
   } catch (sendError) {
     status.textContent = sendError instanceof Error ? sendError.message : "The email could not be sent. Please try again.";
   } finally {
-    if (sent) settleSendState(button);
-    else setSendState(button, "error");
+    setSendState(button, sent ? "idle" : "error");
+  }
+  if (sent) {
+    contactDialog.close();
+    showSentConfirmation();
   }
 }
 

@@ -2,7 +2,7 @@ import { properties } from "./data.js";
 import { DEFAULT_RECIPIENT, enforceBody, enforceSubject } from "./inquiry-format.js";
 import { SLOT_MINUTES, availabilityLines, mergedWindows, slotValue, slotsBetween, timeLabel, windowLabel } from "./callback-windows.js";
 import { bindPhoneFormatting } from "./phone-format.js";
-import { setSendState, settleSendState } from "./send-button.js";
+import { setSendState, showSentConfirmation } from "./send-button.js";
 import "./site-shell.js";
 
 const TIME_ZONE = "America/Toronto";
@@ -393,11 +393,13 @@ sendButton.addEventListener("click", async () => {
     renderSelectedProperties();
     pendingInquiry = null;
     sent = true;
-    setTimeout(() => reviewDialog.close(), 1800);
   } catch (error) {
     sendStatus.textContent = error instanceof Error ? error.message : "The email could not be sent. Please try again.";
   } finally {
-    if (sent) settleSendState(sendButton);
-    else setSendState(sendButton, "error");
+    setSendState(sendButton, sent ? "idle" : "error");
+  }
+  if (sent) {
+    reviewDialog.close();
+    showSentConfirmation();
   }
 });

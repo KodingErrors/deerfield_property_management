@@ -813,20 +813,36 @@ h2 { max-width: 640px; margin: 0; font-size: clamp(26px, 2.6vw, 34px); line-heig
 .modal[open], .email-review-dialog[open] { animation: rise-in .22s ease both; }
 .toast { transition: opacity .22s ease, transform .3s cubic-bezier(.2, .8, .2, 1); }
 
-/* The paper plane on "Send inquiry": nudges on hover, takes off while sending, lands as a check. */
+/* "Send inquiry": the plane nudges on hover and breathes while the request is in flight. */
 .send-button { gap: 9px; }
-.send-button .send-icon { display: inline-flex; line-height: 0; transition: transform .25s cubic-bezier(.2, .7, .2, 1); }
+.send-button .send-icon { display: inline-flex; width: 18px; height: 18px; line-height: 0; transition: transform .25s cubic-bezier(.2, .7, .2, 1); }
 .send-button:hover:not(:disabled) .send-icon { transform: translate(2px, -2px) rotate(-10deg); }
-@keyframes plane-takeoff {
-  0% { transform: translate(0, 0) rotate(0); opacity: 1; }
-  45% { transform: translate(30px, -24px) rotate(-22deg); opacity: 0; }
-  50% { transform: translate(-26px, 20px) rotate(8deg); opacity: 0; }
-  100% { transform: translate(0, 0) rotate(0); opacity: 1; }
-}
-.send-button.is-sending .send-icon { animation: plane-takeoff 1.15s cubic-bezier(.45, 0, .2, 1) infinite; }
+@keyframes plane-breathe { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(2px, -2px); } }
+.send-button.is-sending .send-icon { animation: plane-breathe 1s ease-in-out infinite; }
 .send-button.is-sending { opacity: 1; cursor: progress; }
-@keyframes check-land { 0% { transform: scale(.3) rotate(-30deg); opacity: 0; } 65% { transform: scale(1.18); opacity: 1; } 100% { transform: scale(1) rotate(0); } }
-.send-button.is-sent { background: var(--soft-ink); }
-.send-button.is-sent .send-icon { animation: check-land .45s cubic-bezier(.2, .8, .2, 1.2) both; }
 .send-button.is-error { background: #9a4a3a; }
 .send-button.is-error:hover:not(:disabled) { background: #843d2f; }
+
+/* Confirmation: centre-screen, the plane flies in along a dotted trail for one second,
+   then "Sent!" appears. Click anywhere or wait and it dismisses itself. */
+.sent-dialog { width: min(440px, calc(100% - 32px)); padding: 28px 32px 32px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface); color: var(--text); text-align: center; box-shadow: 0 16px 48px rgb(0 0 0 / 24%); cursor: default; }
+.sent-dialog::backdrop { background: rgb(10 15 10 / 62%); backdrop-filter: blur(4px); }
+.sent-scene { position: relative; height: 170px; margin: 0 auto; overflow: hidden; }
+.sent-trail { position: absolute; inset: 0; width: 100%; height: 100%; color: color-mix(in srgb, var(--primary) 45%, var(--border)); }
+.sent-trail path { stroke-dasharray: 6 8; stroke-dashoffset: 0; animation: trail-draw 1s cubic-bezier(.4, 0, .2, 1) both; }
+@keyframes trail-draw { from { opacity: 0; stroke-dashoffset: 84; } 30% { opacity: 1; } to { opacity: 1; stroke-dashoffset: 0; } }
+.sent-plane { position: absolute; left: 50%; top: 50%; width: 72px; height: 72px; margin: -36px 0 0 -36px; color: var(--primary); animation: sent-flight 1s cubic-bezier(.4, 0, .2, 1) both; }
+.sent-plane svg { width: 100%; height: 100%; }
+@keyframes sent-flight {
+  0% { transform: translate(-150px, 62px) rotate(14deg) scale(.55); opacity: 0; }
+  12% { opacity: 1; }
+  55% { transform: translate(20px, -12px) rotate(-4deg) scale(1.05); }
+  100% { transform: translate(0, 0) rotate(-8deg) scale(1); opacity: 1; }
+}
+.sent-copy { opacity: 0; transform: translateY(8px); transition: opacity .3s ease, transform .3s ease; }
+.sent-dialog.is-landed .sent-copy { opacity: 1; transform: none; }
+.sent-dialog.is-landed .sent-plane { animation: plane-settle .5s cubic-bezier(.2, .8, .2, 1.2) both; }
+@keyframes plane-settle { from { transform: translate(0, 0) rotate(-8deg) scale(1); } 60% { transform: translate(0, -6px) rotate(-8deg) scale(1.08); } to { transform: translate(0, 0) rotate(-8deg) scale(1); } }
+.sent-title { margin: 6px 0 0; font-size: 32px; font-weight: 700; letter-spacing: -.02em; line-height: 1.15; }
+.sent-message { margin: 8px 0 20px; color: var(--muted); font-size: 15px; line-height: 1.5; }
+.sent-copy .secondary-button { min-width: 120px; }
