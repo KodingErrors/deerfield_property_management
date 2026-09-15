@@ -118,14 +118,18 @@ function progressMarkup() {
     .join("");
 }
 
+let renderedStep = null;
+
 function finderFrame(title, subtitle, body) {
+  const entering = renderedStep !== null && renderedStep !== step;
+  renderedStep = step;
   finder.innerHTML =
     '<header class="finder-header">' +
       '<div><p class="card-title">Build your property search</p><p>Your answers stay editable until you contact Deerfield.</p></div>' +
       '<p class="step-count">Step ' + step + ' of 4</p>' +
       '<div class="progress" aria-label="Step ' + step + ' of 4">' + progressMarkup() + '</div>' +
     '</header>' +
-    '<div class="finder-body">' +
+    '<div class="finder-body' + (entering ? " step-enter" : "") + '">' +
       '<p class="eyebrow">' + escapeHtml(title) + '</p>' +
       body +
       (subtitle ? '<p class="help">' + escapeHtml(subtitle) + '</p>' : "") +
@@ -297,13 +301,14 @@ function captureCurrentStep() {
 }
 
 function renderWizard() {
+  const stepChanged = renderedStep !== step;
   landing.hidden = false;
   resultsView.hidden = true;
   if (step === 1) renderStepOne();
   if (step === 2) renderStepTwo();
   if (step === 3) renderStepThree();
   if (step === 4) renderStepFour();
-  finder.scrollIntoView({ behavior: "smooth", block: "start" });
+  if (stepChanged) finder.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
 finder.addEventListener("click", (event) => {
@@ -313,7 +318,11 @@ finder.addEventListener("click", (event) => {
     if (search.type !== nextType) search.features = [];
     search.type = nextType;
     saveSearch();
-    renderStepOne();
+    for (const tile of finder.querySelectorAll("[data-type]")) {
+      tile.setAttribute("aria-pressed", String(tile.dataset.type === nextType));
+    }
+    const nextButton = finder.querySelector('[data-action="next"], [data-action="results"]');
+    if (nextButton) nextButton.disabled = false;
     return;
   }
 

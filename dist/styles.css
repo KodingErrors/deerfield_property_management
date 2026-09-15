@@ -159,10 +159,10 @@ h1 em { color: inherit; font-style: normal; font-weight: inherit; }
 .portfolio-stats dt { font-size: 27px; color: var(--text); }
 .portfolio-stats dd { margin: 4px 0 0; color: var(--muted); font-size: 13px; line-height: 1.4; }
 .finder-card { overflow: hidden; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface); box-shadow: 0 1px 2px rgb(var(--shadow) / 6%); }
-.finder-header { position: relative; display: grid; grid-template-columns: 1fr auto; gap: 20px; padding: clamp(12px, 1.8vh, 24px) clamp(20px, 2vw, 34px) clamp(12px, 1.8vh, 24px); border-bottom: 1px solid var(--border); }
+.finder-header { position: relative; display: grid; grid-template-columns: 1fr auto; align-items: start; gap: 12px 20px; padding: clamp(12px, 1.8vh, 24px) clamp(20px, 2vw, 34px) clamp(12px, 1.8vh, 24px); border-bottom: 1px solid var(--border); }
 .finder-header p { margin: 0; color: var(--muted); font-size: 14px; }
 .finder-header .card-title { margin-bottom: 4px; color: var(--text); font-size: clamp(21px, 2.7vh, 31px); letter-spacing: -.03em; }
-.step-count { padding-top: 10px; white-space: nowrap; font-weight: 600; }
+.step-count { align-self: center; white-space: nowrap; color: var(--muted); font-size: 14px; font-weight: 600; }
 .progress { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: clamp(5px, 1vh, 8px); }
 .progress i { height: 6px; border-radius: var(--radius-sm); background: var(--track); }
 .progress i:first-child { background: var(--primary); }
@@ -175,7 +175,7 @@ h2 { max-width: 640px; margin: 0; font-size: clamp(26px, 2.6vw, 34px); line-heig
 .help { max-width: 68ch; margin: clamp(6px, 1vh, 13px) 0 0; color: var(--muted); font-size: 14px; line-height: 1.5; }
 .space-grid { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(8px, 1.2vh, 12px); margin-top: clamp(12px, 2vh, 28px); }
 .choice {
-  min-height: clamp(72px, 9.4vh, 112px); display: flex; align-items: flex-start; gap: 13px; padding: clamp(11px, 1.5vh, 17px);
+  min-height: clamp(72px, 9.4vh, 112px); display: flex; align-items: center; gap: 14px; padding: clamp(11px, 1.5vh, 17px) clamp(13px, 1.6vh, 18px);
   border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); color: var(--text);
   text-align: left; cursor: pointer; transition: border-color .15s ease;
 }
@@ -183,8 +183,9 @@ h2 { max-width: 640px; margin: 0; font-size: clamp(26px, 2.6vw, 34px); line-heig
 .choice[aria-pressed="true"] { border-color: var(--primary); box-shadow: inset 0 0 0 1px var(--primary); background: var(--soft); }
 .choice-icon { flex: 0 0 38px; height: 38px; display: grid; place-items: center; border-radius: var(--radius-sm); background: var(--soft); color: var(--primary); font-family: var(--font); font-weight: 700; }
 .choice[aria-pressed="true"] .choice-icon { background: var(--primary); color: var(--primary-ink); }
-.choice strong { display: block; font-size: clamp(19px, 2.5vh, 25px); line-height: 1.1; letter-spacing: -.02em; }
-.choice small { display: block; margin-top: clamp(3px, 0.6vh, 7px); color: var(--muted); font-size: 13px; line-height: 1.55; }
+.choice > span:last-child { display: block; min-width: 0; }
+.choice strong { display: block; font-size: clamp(18px, 2.4vh, 22px); line-height: 1.2; letter-spacing: -.02em; }
+.choice small { display: block; margin-top: 2px; color: var(--muted); font-size: 13px; line-height: 1.45; }
 .finder-actions { display: flex; justify-content: flex-end; margin-top: clamp(10px, 1.5vh, 24px); padding-top: clamp(9px, 1.4vh, 19px); border-top: 1px solid var(--border); }
 .primary-button {
   min-height: 44px; display: inline-flex; align-items: center; gap: 10px; padding: 0 20px;
@@ -230,7 +231,7 @@ h2 { max-width: 640px; margin: 0; font-size: clamp(26px, 2.6vw, 34px); line-heig
 .text-button, .secondary-button, .select-button, .icon-button {
   border: 1px solid var(--border); background: var(--surface); color: var(--text); cursor: pointer;
 }
-.text-button { min-height: 44px; padding: 0 6px; border: 0; color: var(--muted); font-weight: 700; }
+.text-button { min-height: 44px; padding: 0; border: 0; color: var(--muted); font-size: 15px; font-weight: 600; }
 .text-button:hover { color: var(--primary); }
 .secondary-button, .select-button { min-height: 44px; padding: 0 18px; border-radius: var(--radius-sm); font-size: 15px; font-weight: 600; }
 .secondary-button:hover, .select-button:hover { border-color: var(--primary); color: var(--primary); }
@@ -799,14 +800,14 @@ h2 { max-width: 640px; margin: 0; font-size: clamp(26px, 2.6vw, 34px); line-heig
 .card-photo-link img { transition: transform .5s cubic-bezier(.2, .7, .2, 1); }
 .card-photo-link:hover img, .card-photo-link:focus-visible img { transform: scale(1.04); }
 .choice { transition: border-color .18s ease, box-shadow .18s ease, transform .18s ease, background .18s ease; }
-.choice:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgb(var(--shadow) / 10%); }
+.choice:hover { box-shadow: 0 6px 16px rgb(var(--shadow) / 10%); }
 .choice-icon { transition: transform .2s ease, background .2s ease; }
 .choice:hover .choice-icon { transform: scale(1.08); }
 .availability-cell span, .feature-filter-chips button, .radio-card { transition: background .15s ease, border-color .15s ease, color .15s ease; }
 
 /* Entering content rises in once, only in response to the visitor moving forward. */
 @keyframes rise-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
-.finder-body { animation: rise-in .28s ease both; }
+.finder-body.step-enter { animation: rise-in .28s ease both; }
 .results-grid .property-card { animation: rise-in .4s ease both; }
 .results-grid .property-card:nth-child(2) { animation-delay: .06s; }
 .results-grid .property-card:nth-child(3) { animation-delay: .12s; }
