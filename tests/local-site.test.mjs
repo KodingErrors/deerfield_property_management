@@ -140,6 +140,18 @@ test("the results view can send an inquiry through the same endpoint as the cont
   assert.doesNotMatch(script, /Opening email does not send it/);
 });
 
+test("selecting a property to compare does not re-render the results grid", () => {
+  const script = readFileSync(join(dist, "app.js"), "utf8");
+  const start = script.indexOf('const selectedButton = event.target.closest("[data-select]")');
+  assert.ok(start > 0, "the results view must still handle [data-select] clicks");
+  const handler = script.slice(start, script.indexOf('const action = event.target.closest("[data-results-action]")', start));
+  // Rebuilding the grid recreates every card, which replays their rise-in animation and
+  // reads as the results blinking. Update the button and the Compare count in place.
+  assert.doesNotMatch(handler, /renderResults\(\)/, "selection must not re-render the grid");
+  assert.match(handler, /aria-pressed/);
+  assert.match(handler, /syncCompareButton\(\)/);
+});
+
 test("seed details are deterministic and shaped by property type", () => {
   assert.deepEqual(
     seedDetails("industrial-88", "industrial", true, "Burlington"),

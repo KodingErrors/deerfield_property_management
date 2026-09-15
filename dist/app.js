@@ -519,6 +519,16 @@ function renderExcluded() {
     ).join("") + '</div></details>';
 }
 
+// Selection only affects the clicked button and the Compare count, so update those in
+// place. Re-rendering the whole grid would rebuild every card and replay their entry
+// animation, which reads as the results blinking on every click.
+function syncCompareButton() {
+  const compare = resultsView.querySelector('[data-results-action="compare"]');
+  if (!compare) return;
+  compare.textContent = "Compare " + selected.size;
+  compare.disabled = selected.size < 2;
+}
+
 resultsView.addEventListener("click", (event) => {
   const selectedButton = event.target.closest("[data-select]");
   if (selectedButton) {
@@ -526,7 +536,10 @@ resultsView.addEventListener("click", (event) => {
     if (selected.has(id)) selected.delete(id);
     else if (selected.size < 4) selected.add(id);
     else return showToast("Compare up to four properties at a time.");
-    renderResults();
+    const isSelected = selected.has(id);
+    selectedButton.setAttribute("aria-pressed", String(isSelected));
+    selectedButton.textContent = isSelected ? "Selected ✓" : "Select to compare";
+    syncCompareButton();
     return;
   }
   const action = event.target.closest("[data-results-action]")?.dataset.resultsAction;
