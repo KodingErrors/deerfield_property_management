@@ -2,6 +2,7 @@ import { cities, featureSets, properties, SOURCE_CHECKED_AT } from "./data.js";
 import { formatNumber, matchProperties } from "./matcher.js";
 import { BODY_MAX_LENGTH, DEFAULT_RECIPIENT, SUBJECT_MAX_LENGTH, enforceBody, enforceSubject } from "./inquiry-format.js";
 import { bindPhoneFormatting } from "./phone-format.js";
+import { callbackPickerMarkup, mountCallbackPicker } from "./callback-picker.js";
 import { setSendState, showSentConfirmation } from "./send-button.js";
 
 const STORAGE_KEY = "deerfield-search-v1";
@@ -609,6 +610,7 @@ function openContact() {
           escapeHtml(match.property.name) + '</strong><small>' + escapeHtml(match.property.city + ", ON") + '</small></span></label>').join("")
           : '<p>No property selected. Deerfield will receive your requirements only.</p>') +
       '</fieldset>' +
+      callbackPickerMarkup() +
       '<p class="form-error" id="contact-error" role="alert"></p>' +
     '</form><aside class="packet-preview"><p class="eyebrow">Your email — review and edit</p>' +
       '<dl class="review-envelope" id="wizard-envelope">' +
@@ -629,6 +631,11 @@ function openContact() {
   setSendState(document.querySelector("[data-send-inquiry]"), "idle");
   bindPhoneFormatting(document.querySelector("#contact-phone"));
   packetEdited = false;
+  // List view first: the modal's form column is too narrow for the grid to be the
+  // natural default, but the toggle still offers it. The selection outlives the modal.
+  callbackPicker = mountCallbackPicker(contactContent.querySelector(".callback-picker"), {
+    selected: wizardAvailability, mode: "list", phoneInput: document.querySelector("#contact-phone"), onChange: updatePacketPreview,
+  });
   updatePacketPreview();
   contactDialog.showModal();
   document.querySelector("#contact-name")?.focus();
@@ -649,6 +656,7 @@ function contactValues() {
     intendedUse: document.querySelector("#contact-use")?.value.trim() || "",
     notes: document.querySelector("#contact-notes")?.value.trim() || "",
     propertyIds: selectedIds,
+    availability: callbackPicker ? callbackPicker.lines() : [],
   };
 }
 
@@ -699,6 +707,9 @@ function buildInquiry(values) {
     "Items that need verification:",
     ...(verification.length ? verification.map((item) => "- " + item) : ["- None identified"]),
     "",
+    "Callback availability (Eastern time):",
+    ...(values.availability.length ? values.availability : ["- No callback windows selected"]),
+    "",
     "Additional notes:",
     values.notes || "—",
     "",
@@ -725,6 +736,11 @@ function timingLabel(value) {
 // The editor is seeded from the form and follows it until the visitor edits the email
 // directly; from then on their wording wins and only an explicit reset regenerates it.
 let packetEdited = false;
+
+// Callback windows chosen in the modal, kept outside it so closing and reopening the
+// form does not lose them. The picker is re-mounted on every open.
+const wizardAvailability = new Set();
+let callbackPicker = null;
 
 function packetEditor() {
   const subject = document.querySelector("#packet-subject");
@@ -808,6 +824,7 @@ async function sendWizardInquiry() {
     setSendState(button, sent ? "idle" : "error");
   }
   if (sent) {
+    wizardAvailability.clear();
     contactDialog.close();
     showSentConfirmation();
   }

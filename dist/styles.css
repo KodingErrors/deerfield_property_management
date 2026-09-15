@@ -628,7 +628,7 @@ h2 { max-width: 640px; margin: 0; font-size: clamp(26px, 2.6vw, 34px); line-heig
 .property-selection-chips button { display: inline-flex; align-items: center; gap: 8px; min-height: 34px; max-width: 100%; padding: 5px 8px 5px 11px; border: 1px solid color-mix(in srgb, var(--primary) 35%, var(--border)); border-radius: var(--radius-sm); background: var(--soft); color: var(--soft-ink); cursor: pointer; font-size: 12px; }
 .property-selection-chips button span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .property-selection-chips button b { font-size: 17px; line-height: 1; }
-.callback-picker { margin: 23px 0; padding: 0; border: 0; }
+.callback-picker { min-inline-size: 0; margin: 23px 0; padding: 0; border: 0; } /* a fieldset otherwise refuses to shrink below the grid, so the scroll strip could never kick in */
 .callback-picker legend { padding: 0; color: var(--muted); font-size: 13px; font-weight: 750; }
 .callback-picker > p { margin: 7px 0 13px; color: var(--muted); font-size: 13px; line-height: 1.5; }
 .availability-scroll { overflow-x: auto; padding-bottom: 7px; scrollbar-color: var(--primary) var(--track); }

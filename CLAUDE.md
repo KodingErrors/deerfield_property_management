@@ -60,6 +60,13 @@ Shared layers:
   hash into mulberry32), plus `intBetween`/`oneOf`/`roundedTo` helpers.
 - **`dist/callback-windows.js`** — pure model for callback availability (slot keys, merging
   contiguous slots into windows, email lines). DOM-free so it can be unit tested.
+- **`dist/callback-picker.js`** — the callback-availability widget both inquiry paths use:
+  `callbackPickerMarkup()` renders the fieldset (the contact page ships the same markup
+  statically — keep the two in step) and `mountCallbackPicker(root, { selected, mode,
+  phoneInput, onChange })` wires the paint grid and the range builder ("list view") to one
+  Set of slot keys. `mode` is `"auto"` on the contact page (grid for a mouse, list for a
+  thumb) and `"list"` in the wizard's modal, whose form column is too narrow for the grid
+  to lead; the toggle offers the other view either way.
 - **`dist/inquiry-format.js`** — the canonical subject/body rules shared with the review dialog.
 - **`dist/phone-format.js`** — live North American phone formatting for both phone fields
   (`(416) 262-6853`, `+1 …`). `formatPhone`/`caretAfterDigits` are pure and unit tested;
@@ -102,7 +109,10 @@ explain rankings, so reasons are user-facing copy.
    regenerated from the form until the visitor edits it (`packetEdited`), after which their
    text wins and only "Reset to generated draft" resyncs it. All three actions — send, open in
    email app, copy — read `finalInquiry()`, i.e. the editor's text through `enforceSubject` /
-   `enforceBody`, never `buildInquiry()` directly.
+   `enforceBody`, never `buildInquiry()` directly. The modal's form also carries the
+   callback picker; its selection lives in `wizardAvailability` outside the modal so
+   closing and reopening keeps it, and `buildInquiry()` writes it as a "Callback
+   availability (Eastern time)" block.
 2. **Contact page → Worker** (`dist/contact.js` → `worker/index.js`): posts JSON to
    `/api/inquiries`, which relays via Resend to `INQUIRY_RECIPIENT` (falling back to
    `DEFAULT_RECIPIENT`) with a forced `[DEERFIELD]` subject prefix and the visitor's address as
@@ -159,12 +169,14 @@ Other repo conventions:
 - `dist/app.js` registers two WebMCP tools on `document.modelContext` when present
   (`configure_property_search`, `show_property_matches`). Both are explicitly non-sending: agents
   can stage a search and display matches but cannot contact the brokerage.
-- Callback scheduling in `contact.js` is pinned to `America/Toronto` business hours and computed
-  from `Intl` parts, not local time. Two input modes write to the same `selectedAvailability` Set
-  of `YYYY-MM-DD|HH:MM` keys — a drag-to-paint grid and a range builder — so either can be edited
-  without the other losing state; `matchMedia("(pointer: coarse), (max-width: 720px)")` picks the
-  default and a toggle overrides it. Pointer painting calls `preventDefault()`, so the grid's
-  `change` listener only ever fires for keyboard toggles.
+- Callback scheduling (`dist/callback-picker.js`) is pinned to `America/Toronto` business hours
+  and computed from `Intl` parts, not local time. Two input modes write to the same `selected`
+  Set of `YYYY-MM-DD|HH:MM` keys — a drag-to-paint grid and a range builder — so either can be
+  edited without the other losing state; in `"auto"` mode
+  `matchMedia("(pointer: coarse), (max-width: 720px)")` picks the default and a toggle overrides
+  it. Pointer painting calls `preventDefault()`, so the grid's `change` listener only ever fires
+  for keyboard toggles; the grid captures the pointer, so its own `pointerup` ends a paint (no
+  `window` listeners, which matters because the wizard re-mounts the picker on every open).
 
 ## Deployment
 
