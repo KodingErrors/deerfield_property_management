@@ -70,7 +70,7 @@ function render() {
   grid.innerHTML = filtered.length ? filtered.map((item) => `
     <article class="portfolio-card">
       <a class="portfolio-card-visual card-photo-link ${item.image ? "has-photo" : ""}" href="../property/?id=${encodeURIComponent(item.id)}" aria-label="View ${escapeHtml(item.name)} details">${item.image ? `<img src="../${escapeHtml(item.image)}" alt="${escapeHtml(item.name)}" loading="lazy">` : `<span>${escapeHtml(typeLabel[item.type])}</span>`}<b class="status-badge ${item.available ? "strong" : "verify"}">${item.available ? "Space available" : "Portfolio property"}</b><span class="photo-hint" aria-hidden="true">View details</span></a>
-      <div class="portfolio-card-copy"><p>${escapeHtml(item.city)}, Ontario</p><h2>${escapeHtml(item.name)}</h2><span>${escapeHtml(unitSummary(item))}</span>${selectedFeatures.size ? `<div class="card-feature-status">${escapeHtml(featureSummary(item))}</div>` : ""}<div class="card-actions"><a href="../property/?id=${encodeURIComponent(item.id)}" aria-label="View ${escapeHtml(item.name)} details">View property details →</a><button class="card-compare" type="button" data-compare="${escapeHtml(item.id)}" aria-pressed="${compareSelection.has(item.id)}">${compareSelection.has(item.id) ? "✓ Selected" : "+ Compare"}</button></div></div>
+      <div class="portfolio-card-copy"><p>${escapeHtml(item.city)}, Ontario</p><h2>${escapeHtml(item.name)}</h2><span>${escapeHtml(unitSummary(item))}</span>${selectedFeatures.size ? `<div class="card-feature-status">${escapeHtml(featureSummary(item))}</div>` : ""}<div class="card-actions"><a href="../property/?id=${encodeURIComponent(item.id)}" aria-label="View ${escapeHtml(item.name)} details">View property details</a><button class="card-compare" type="button" data-compare="${escapeHtml(item.id)}" aria-pressed="${compareSelection.has(item.id)}">${compareSelection.has(item.id) ? "✓ Selected" : "+ Compare"}</button></div></div>
     </article>`).join("") : '<div class="portfolio-empty"><h2>No properties match those filters.</h2><p>Try a different city or property type, clear a feature, or include listings whose features need confirmation.</p></div>';
 }
 
@@ -174,7 +174,7 @@ function openCompare() {
       chosen.map((item) => `<td>${row.render(item)}</td>`).join("") + "</tr>").join("") +
     '</tbody></table></div>' +
     '<footer class="modal-footer"><button class="secondary-button" type="button" data-close-compare>Close</button>' +
-    `<a class="primary-button" href="${contactHref}">Contact about these →</a></footer>`;
+    `<a class="primary-button" href="${contactHref}">Contact about these</a></footer>`;
   compareDialog.showModal();
 }
 

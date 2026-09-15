@@ -256,9 +256,9 @@ function timingOptions() {
 
 function wizardActions(showBack, nextLabel, resultsAction = false) {
   return '<footer class="finder-actions split">' +
-    (showBack ? '<button class="text-button" type="button" data-action="back">← Back</button>' : '<button class="text-button" type="button" data-action="start-over">Start over</button>') +
+    (showBack ? '<button class="text-button" type="button" data-action="back">Back</button>' : '<button class="text-button" type="button" data-action="start-over">Start over</button>') +
     '<button class="primary-button" type="button" data-action="' + (resultsAction ? "results" : "next") + '"' +
-    (!search.type ? " disabled" : "") + '>' + nextLabel + ' <span aria-hidden="true">→</span></button>' +
+    (!search.type ? " disabled" : "") + '>' + nextLabel + '</button>' +
   '</footer>';
 }
 
@@ -463,7 +463,7 @@ function renderMatchCard(match, index) {
           '<li data-outcome="' + item.outcome + '"><strong>' + escapeHtml(item.label) + '</strong><span>' + escapeHtml(item.reason) + '</span></li>'
         ).join("") + '</ul></details>' +
       '<footer class="property-actions">' +
-        '<a class="text-link" href="' + property.sourceUrl + '">View property details →</a>' +
+        '<a class="text-link" href="' + property.sourceUrl + '">View property details</a>' +
         '<button class="select-button" type="button" data-select="' + property.id + '" aria-pressed="' + selectedNow + '">' +
           (selectedNow ? "Selected ✓" : "Select to compare") + '</button>' +
       '</footer>' +
@@ -619,8 +619,8 @@ function openContact() {
       '</div></aside></div>' +
     '<footer class="modal-footer"><p class="form-status" id="wizard-send-status" aria-live="polite"></p>' +
     '<button class="secondary-button" type="button" data-copy-inquiry>Copy inquiry</button>' +
-    '<button class="secondary-button" type="button" data-open-email>Open in email app <span aria-hidden="true">↗</span></button>' +
-    '<button class="primary-button" type="button" data-send-inquiry>Send inquiry →</button></footer>';
+    '<button class="secondary-button" type="button" data-open-email>Open in email app</button>' +
+    '<button class="primary-button" type="button" data-send-inquiry>Send inquiry</button></footer>';
   bindPhoneFormatting(document.querySelector("#contact-phone"));
   packetEdited = false;
   updatePacketPreview();
@@ -800,7 +800,7 @@ async function sendWizardInquiry() {
     status.textContent = sendError instanceof Error ? sendError.message : "The email could not be sent. Please try again.";
   } finally {
     button.disabled = false;
-    button.textContent = "Send inquiry →";
+    button.textContent = "Send inquiry";
   }
 }
 

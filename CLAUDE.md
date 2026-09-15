@@ -131,6 +131,13 @@ fails the build if you:
 
 Other repo conventions:
 
+- The visual language in `dist/styles.css` is modelled on mainstream property/brokerage sites
+  (LoopNet, Zillow, CBRE, JLL), not an editorial look: one platform sans stack (`--font`), bold
+  sans headings at corporate sizes, sentence-case labels, a full-bleed 64px header bar, a
+  1280px column, 44px controls, and three corner radii (`--radius-sm` 4px controls, `--radius`
+  6px cards, `--radius-lg` 8px dialogs) with 1px borders and 1px shadows. Keep new UI inside
+  those tokens; do not reintroduce serif display type, tracked uppercase eyebrows, arrow glyphs
+  in button copy, or large blurred shadows.
 - All markup is built with template literals, so every interpolated value goes through the local
   `escapeHtml()` in each module. There is no shared escape helper — each module defines its own.
 - A listing photo is a link to that property's detail page (`.card-photo-link`) on both the

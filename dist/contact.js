@@ -396,6 +396,6 @@ sendButton.addEventListener("click", async () => {
     sendStatus.textContent = error instanceof Error ? error.message : "The email could not be sent. Please try again.";
   } finally {
     sendButton.disabled = false;
-    sendButton.textContent = "Send inquiry →";
+    sendButton.textContent = "Send inquiry";
   }
 });
