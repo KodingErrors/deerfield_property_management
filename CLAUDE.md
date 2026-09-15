@@ -18,7 +18,7 @@ Three subdirectories of `dist/` *are* generated and gitignored — `dist/client/
 npm start                           # build, then wrangler dev on the bundle at http://127.0.0.1:8787 (serves /api/*)
 npm run dev                         # alias of npm start
 npm run build                       # assemble the Worker bundle into dist/{client,server,.openai}
-npm run test:p0                     # all tests (node:test): matcher, callback-windows, phone-format, local-site, worker
+npm run test:p0                     # all tests (node:test): matcher, callback-windows, phone-format, send-button, local-site, worker
 node --test tests/matcher.test.mjs  # one test file
 npm run check                       # node --check over the hand-written modules (they are never bundled)
 python -m http.server 4173 --directory dist   # static preview; /api/inquiries will 404
@@ -140,11 +140,14 @@ Other repo conventions:
   in button copy, or large blurred shadows. The palette is the original sage-on-cream
   (`--primary #456a3d`, `--bg #fbfcfa`); only type, boxing and dimensions were modernised.
 - Motion lives at the end of `dist/styles.css` and only answers pointer or action: hover lifts,
-  a nav underline, a one-shot `rise-in` for wizard steps/results/dialogs, and the paper-plane
-  "Send inquiry" button. Both inquiry paths render that button through
-  `dist/send-button.js` (`setSendState` / `settleSendState`: idle → sending → sent | error) —
-  never set its `textContent` directly. The `prefers-reduced-motion` block at the top zeroes
-  every duration and caps iteration counts, so new animations need no extra guard.
+  a nav underline, a one-shot `rise-in` for wizard steps/results/dialogs, and the sent
+  confirmation. Both inquiry paths render the "Send inquiry" button through
+  `dist/send-button.js` (`setSendState`: idle → sending → error) — never set its `textContent`
+  directly — and on success close their own dialog and call `showSentConfirmation()`: a centred
+  `#sent-dialog` in which the paper plane flies in for `FLIGHT_MS` (1s), then "Sent!" appears;
+  it dismisses on click, Escape or after a short linger. `tests/send-button.test.mjs` pins that
+  timing. The `prefers-reduced-motion` block at the top zeroes every duration and caps
+  iteration counts, so new animations need no extra guard.
 - All markup is built with template literals, so every interpolated value goes through the local
   `escapeHtml()` in each module. There is no shared escape helper — each module defines its own.
 - A listing photo is a link to that property's detail page (`.card-photo-link`) on both the
