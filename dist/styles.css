@@ -364,13 +364,18 @@ h2 { max-width: 570px; margin: 0; font-size: clamp(39px, 4.3vw, 61px); line-heig
 
 .modal { width: min(1180px, calc(100% - 28px)); max-height: calc(100dvh - 28px); padding: 0; border: 1px solid var(--border); border-radius: 24px; background: var(--surface); color: var(--text); box-shadow: 0 30px 100px rgb(0 0 0 / 30%); }
 .modal::backdrop { background: rgb(10 15 10 / 67%); backdrop-filter: blur(5px); }
+/* Header and footer take their natural height; the scrolling region gets exactly what is left,
+   so nothing ever slides under the footer regardless of heading size or viewport height. */
+.modal[open] { display: flex; flex-direction: column; }
+.modal > div { display: flex; flex-direction: column; flex: 1 1 auto; min-height: 0; }
+.modal-header, .modal-footer { flex: none; }
 .modal-header { display: flex; justify-content: space-between; align-items: start; gap: 25px; padding: 27px 30px 23px; border-bottom: 1px solid var(--border); }
 .modal-header .eyebrow { margin-bottom: 8px; }
 .modal-header h2 { font-size: clamp(36px, 5vw, 57px); }
 .modal-header p:last-child { margin: 8px 0 0; color: var(--muted); }
 .icon-button { flex: 0 0 44px; height: 44px; border-radius: 50%; font-size: 28px; font-weight: 300; line-height: 1; }
 .modal-footer { position: sticky; bottom: 0; display: flex; justify-content: flex-end; gap: 10px; padding: 18px 30px; border-top: 1px solid var(--border); background: color-mix(in srgb, var(--surface) 92%, transparent); backdrop-filter: blur(12px); }
-.compare-scroll { max-height: calc(100dvh - 220px); overflow: auto; }
+.compare-scroll { flex: 1 1 auto; min-height: 0; overflow: auto; }
 .compare-scroll table { width: 100%; border-collapse: collapse; min-width: 760px; }
 .compare-scroll th, .compare-scroll td { min-width: 170px; padding: 15px; border-right: 1px solid var(--border); border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; font-size: 13px; line-height: 1.45; }
 .compare-scroll thead th { position: sticky; top: 0; z-index: 2; background: var(--soft); color: var(--soft-ink); font: 400 22px/1.1 Georgia, serif; }
@@ -381,7 +386,7 @@ h2 { max-width: 570px; margin: 0; font-size: clamp(39px, 4.3vw, 61px); line-heig
 .cell-unknown { color: #a47824; font-weight: 750; }
 .cell-miss { color: var(--destructive, #b43b3b); font-weight: 750; }
 .cell-partial { color: var(--muted); font-weight: 750; }
-.contact-layout { display: grid; grid-template-columns: 1fr 1fr; max-height: calc(100dvh - 224px); overflow: hidden; }
+.contact-layout { display: grid; grid-template-columns: 1fr 1fr; flex: 1 1 auto; min-height: 0; overflow: hidden; }
 .contact-layout form, .packet-preview { overflow: auto; padding: 28px 30px; }
 .contact-layout form { border-right: 1px solid var(--border); }
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
