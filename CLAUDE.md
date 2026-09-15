@@ -6,13 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 **`dist/` is hand-written source, not build output.** The shipping product is a dependency-free
 static site of vanilla ES modules and HTML committed under `dist/`. Edit those files directly.
-
-The `app/`, `components/`, `db/`, `drizzle/`, `hooks/`, `lib/`, `examples/` trees plus
-`vite.config.ts` / `next.config.ts` / `build/sites-vite-plugin.ts` are the untouched
-site-creator (Next 16 + vinext + Cloudflare) starter template. `app/page.tsx` is an early React
-prototype of the landing page that is **not** deployed and is not kept in sync. `npm run build`
-does not compile it. Do not "regenerate" `dist/` from it, and do not assume a change to a
-`components/ui/*` file affects the live site.
+There is no framework, bundler, or transpile step anywhere in this repo; the only npm dependency
+is `wrangler`, used to run the Worker locally.
 
 Three subdirectories of `dist/` *are* generated and gitignored — `dist/client/`,
 `dist/server/`, `dist/.openai/`. Never edit those; they are overwritten on every build.
@@ -20,17 +15,14 @@ Three subdirectories of `dist/` *are* generated and gitignored — `dist/client/
 ## Commands
 
 ```powershell
-npm run test:p0                     # all tests (node:test): matcher, local-site, worker
-node --test tests/matcher.test.mjs  # one test file
+npm start                           # build, then wrangler dev on the bundle at http://127.0.0.1:8787 (serves /api/*)
+npm run dev                         # alias of npm start
 npm run build                       # assemble the Worker bundle into dist/{client,server,.openai}
-npm start                           # build, then wrangler dev on the bundle (serves /api/*)
-npm run lint                        # eslint over the starter TSX only; dist/ is excluded
-node --check dist/app.js            # syntax-check hand-written modules (they are never bundled)
+npm run test:p0                     # all tests (node:test): matcher, callback-windows, local-site, worker
+node --test tests/matcher.test.mjs  # one test file
+npm run check                       # node --check over the hand-written modules (they are never bundled)
 python -m http.server 4173 --directory dist   # static preview; /api/inquiries will 404
 ```
-
-`npm run dev` starts the unused vinext/Next scaffolding, not the Deal Desk. Use `npm start` or
-the `http.server` preview instead.
 
 For the contact form to actually send, `npm start` needs `RESEND_API_KEY` and `RESEND_FROM_EMAIL`;
 without them the endpoint returns 503 by design. Put them in `.dev.vars` at the project root —
@@ -164,12 +156,15 @@ Two non-obvious constraints there:
   normalizes a trailing slash before matching `/api/*`.
 
 `vercel.json` skips the install step because the build and both functions use only local files
-and Node builtins; add `installCommand: "npm install"` back if a real dependency ever appears.
+and Node builtins (`wrangler` is a dev-only tool for `npm start`); add `installCommand: "npm install"`
+back if a runtime dependency ever appears.
 
 `scripts/build-deal-desk-worker.mjs` pins `compatibility_date`; it must not exceed the newest
 date the pinned wrangler's runtime supports or the local server refuses to start. It also clears
 `dist/{client,server,.openai}` with a retry, because Windows locks those folders while a dev
 server serves from them — a running `npm start` is the usual cause of a failed rebuild.
+`scripts/sites-env.mjs` is the only other script: it points wrangler's logs/registry at the
+gitignored `.sites-runtime/` and disables telemetry before `wrangler dev` starts.
 
 ## Note on the README
 

@@ -38,7 +38,7 @@ into it — `.env.example` documents the same three variables — then:
 npm start
 ```
 
-Open `http://127.0.0.1:8787`. The startup banner lists the variables it picked up. Without a
+(`npm run dev` is an alias.) Open `http://127.0.0.1:8787`. The startup banner lists the variables it picked up. Without a
 `RESEND_API_KEY` the site runs normally and the send button reports that delivery is still being
 configured.
 
@@ -60,8 +60,8 @@ Settings > Environment Variables: `RESEND_API_KEY`, `RESEND_FROM_EMAIL` and `INQ
 Copy the names and shapes from `.env.example`.
 
 The install step is skipped on purpose: the build script and both edge functions use only local
-files and Node builtins, so none of the unused starter toolchain needs installing. If a future
-change adds a real dependency, set `installCommand` back to `npm install` in `vercel.json`.
+files and Node builtins. The one dev dependency, `wrangler`, exists only for `npm start`. If a
+future change adds a runtime dependency, set `installCommand` back to `npm install` in `vercel.json`.
 
 Resend's free tier sends 3,000 emails a month. Without a verified domain it will only send
 *from* `onboarding@resend.dev` and only *to* the address that owns the Resend account, so create
@@ -75,10 +75,7 @@ if it is missing or malformed the Worker falls back to the address in `dist/inqu
 
 ```powershell
 npm run test:p0
-node --check dist/app.js
-node --check dist/data.js
-node --check dist/matcher.js
-node --check dist/contact.js
+npm run check
 ```
 
 The wizard's inquiry button opens the visitor's email client with a prepared draft and never

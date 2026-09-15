@@ -1,20 +1,9 @@
 # Only the build script, worker, api wrappers and dist sources matter to the deploy.
 node_modules
-.vinext
 .wrangler
 .sites-runtime
 .npm-cache
 outputs
 work
-examples
-app
-components
-hooks
-lib
-public
-db
-drizzle
-vendor
-build
 dist/client
 dist/server
