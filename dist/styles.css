@@ -497,8 +497,10 @@ h2 { max-width: 640px; margin: 0; font-size: clamp(26px, 2.6vw, 34px); line-heig
 .services-cta, .detail-actions { display: flex; align-items: center; justify-content: space-between; gap: 35px; margin-top: clamp(80px, 10vw, 145px); padding: clamp(34px, 5vw, 60px); border-radius: var(--radius-lg); background: var(--primary); color: var(--primary-ink); }
 .services-cta h2, .detail-actions h2 { max-width: 780px; font-size: clamp(26px, 3vw, 36px); }
 .services-cta .eyebrow, .detail-actions .eyebrow { color: inherit; opacity: .8; }
-.services-cta .primary-button, .detail-actions .primary-button { flex: 0 0 auto; background: #fff; color: var(--primary); text-decoration: none; }
-.services-cta .primary-button:hover, .detail-actions .primary-button:hover { background: var(--soft); }
+/* The button on the brand-green bands takes the band's ink colour so it contrasts in both
+   themes: white on the dark-green band in light mode, deep green on the light-green band in dark. */
+.services-cta .primary-button, .detail-actions .primary-button { flex: 0 0 auto; background: var(--primary-ink); color: var(--primary); text-decoration: none; }
+.services-cta .primary-button:hover, .detail-actions .primary-button:hover { background: color-mix(in srgb, var(--primary-ink) 86%, var(--primary)); color: var(--primary); }
 .cta-pair { display: flex; align-items: center; flex-wrap: wrap; gap: 18px; }
 .secondary-link { color: inherit; font-size: 14px; font-weight: 800; text-decoration: underline; text-underline-offset: 4px; }
 
