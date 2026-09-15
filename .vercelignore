@@ -1,9 +1,0 @@
-# Only the build script, worker, api wrappers and dist sources matter to the deploy.
-node_modules
-.wrangler
-.sites-runtime
-.npm-cache
-outputs
-work
-dist/client
-dist/server

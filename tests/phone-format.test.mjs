@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { caretAfterDigits, formatPhone } from "../dist/phone-format.js";
+import { caretAfterDigits, formatPhone } from "../lib/phone-format.js";
 
 test("formats a North American number progressively as digits arrive", () => {
   const stages = ["", "4", "41", "416", "(416) 2", "(416) 26", "(416) 262", "(416) 262-6", "(416) 262-68", "(416) 262-685", "(416) 262-6853"];

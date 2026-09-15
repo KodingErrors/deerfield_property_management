@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import worker from "../worker/index.js";
-import { DEFAULT_RECIPIENT, enforceSubject } from "../dist/inquiry-format.js";
+import { DEFAULT_RECIPIENT, enforceSubject } from "../lib/inquiry-format.js";
 
 const delivery = {
   RESEND_API_KEY: "test-key",

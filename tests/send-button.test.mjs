@@ -1,123 +1,60 @@
 import assert from "node:assert/strict";
-import test, { mock } from "node:test";
+import { readFileSync } from "node:fs";
+import test from "node:test";
+import { fileURLToPath } from "node:url";
+import { FLIGHT_MS, LINGER_MS, sentSchedule } from "../lib/sent-timing.js";
 
-// Just enough DOM for send-button.js: a dialog element with class list, open state and
-// listeners, a document that can create and find it, and a matchMedia switch.
-function fakeElement() {
-  const listeners = {};
-  const classes = new Set();
-  return {
-    id: "", className: "", innerHTML: "", disabled: false, open: false, attributes: {},
-    classList: {
-      add: (...names) => names.forEach((name) => classes.add(name)),
-      remove: (...names) => names.forEach((name) => classes.delete(name)),
-      contains: (name) => classes.has(name),
-    },
-    setAttribute(name, value) { this.attributes[name] = value; },
-    addEventListener(type, handler) { (listeners[type] ||= []).push(handler); },
-    dispatch(type) { (listeners[type] || []).forEach((handler) => handler()); },
-    showModal() { this.open = true; },
-    close() { this.open = false; this.dispatch("close"); },
-  };
-}
+// The confirmation's timing is pure (lib/sent-timing.js); the wiring around it is checked
+// by reading the components, since rendering React here would need a DOM and a build.
+const read = (path) => readFileSync(fileURLToPath(new URL(`../${path}`, import.meta.url)), "utf8");
 
-function installDom({ reducedMotion = false } = {}) {
-  const body = { children: [], append(el) { this.children.push(el); } };
-  globalThis.document = {
-    body,
-    querySelector: (selector) => body.children.find((el) => `#${el.id}` === selector) || null,
-    createElement: () => fakeElement(),
-  };
-  globalThis.matchMedia = () => ({ matches: reducedMotion });
-}
-
-const { FLIGHT_MS, setSendState, showSentConfirmation } = await import("../dist/send-button.js");
-
-test("setSendState renders the plane icon and the label for each state", () => {
-  const button = fakeElement();
-  setSendState(button, "sending");
-  assert.equal(button.disabled, true);
-  assert.equal(button.classList.contains("is-sending"), true);
-  assert.match(button.innerHTML, /send-icon/);
-  assert.match(button.innerHTML, /Sending/);
-  setSendState(button, "error");
-  assert.equal(button.disabled, false);
-  assert.equal(button.classList.contains("is-sending"), false);
-  assert.equal(button.classList.contains("is-error"), true);
-  assert.match(button.innerHTML, /Try again/);
-  setSendState(button, "idle");
-  assert.equal(button.classList.contains("is-error"), false);
-  assert.match(button.innerHTML, /Send inquiry/);
+test("the plane flies for one second before Sent! appears, then the modal lingers", () => {
+  assert.equal(FLIGHT_MS, 1000);
+  const { landAt, closeAt } = sentSchedule(false);
+  assert.equal(landAt, FLIGHT_MS);
+  assert.equal(closeAt, FLIGHT_MS + LINGER_MS);
+  assert.ok(closeAt > landAt, "the confirmation must stay readable after the plane lands");
 });
 
-test("the confirmation flies for one second, then says Sent!, then dismisses itself", async () => {
-  mock.timers.enable({ apis: ["setTimeout"] });
-  try {
-    installDom();
-    const pending = showSentConfirmation({ message: "On <its> way" });
-    const dialog = document.querySelector("#sent-dialog");
-    assert.equal(dialog.open, true, "opens immediately");
-    assert.equal(dialog.classList.contains("is-landed"), false, "copy hidden while the plane flies");
-    assert.match(dialog.innerHTML, /Sent!/);
-    assert.match(dialog.innerHTML, /On &lt;its&gt; way/, "message is escaped");
+test("with reduced motion the copy appears immediately and still lingers", () => {
+  const { landAt, closeAt } = sentSchedule(true);
+  assert.equal(landAt, 0);
+  assert.equal(closeAt, LINGER_MS);
+});
 
-    mock.timers.tick(FLIGHT_MS - 1);
-    assert.equal(dialog.classList.contains("is-landed"), false);
-    mock.timers.tick(1);
-    await pending;
-    assert.equal(dialog.classList.contains("is-landed"), true, "Sent! shows once the flight ends");
-    assert.equal(dialog.open, true, "still open while it lingers");
+test("the confirmation dialog shows the plane, then Sent!, and can be dismissed", () => {
+  const source = read("components/sent-confirmation.tsx");
+  assert.match(source, /id="sent-dialog"/);
+  assert.match(source, /sent-plane/);
+  assert.match(source, /Sent!/);
+  assert.match(source, /sentSchedule/);
+  // A click or Escape dismisses it, and the copy is gated on is-landed.
+  assert.match(source, /onCancel=/);
+  assert.match(source, /onClick=\{onClose\}/);
+  assert.match(source, /is-landed/);
+});
 
-    mock.timers.tick(2600);
-    assert.equal(dialog.open, false, "closes itself after lingering");
-  } finally {
-    mock.timers.reset();
+test("both inquiry paths render the send button through the shared component", () => {
+  for (const path of ["components/contact-form.tsx", "components/wizard/contact-modal.tsx"]) {
+    const source = read(path);
+    assert.match(source, /<SendButton/, path);
+    // Never write the label by hand: the component owns idle/sending/error.
+    assert.doesNotMatch(source, /textContent\s*=/, path);
+    assert.match(source, /setSendState\("sending"\)/, path);
   }
+  const button = read("components/send-button.tsx");
+  assert.match(button, /idle: "Send inquiry"/);
+  assert.match(button, /sending: "Sending"/);
+  assert.match(button, /error: "Try again"/);
+  assert.match(button, /disabled=\{state === "sending"\}/);
 });
 
-test("a click dismisses the confirmation early and cancels the auto-close", async () => {
-  mock.timers.enable({ apis: ["setTimeout"] });
-  try {
-    installDom();
-    showSentConfirmation();
-    const dialog = document.querySelector("#sent-dialog");
-    dialog.dispatch("click");
-    assert.equal(dialog.open, false);
-    dialog.open = true; // if the auto-close timer were still armed it would flip this back
-    mock.timers.tick(FLIGHT_MS + 2600);
-    assert.equal(dialog.open, true, "auto-close timer was cleared");
-  } finally {
-    mock.timers.reset();
-  }
-});
-
-test("with reduced motion the copy appears immediately", async () => {
-  mock.timers.enable({ apis: ["setTimeout"] });
-  try {
-    installDom({ reducedMotion: true });
-    const pending = showSentConfirmation();
-    mock.timers.tick(0);
-    await pending;
-    assert.equal(document.querySelector("#sent-dialog").classList.contains("is-landed"), true);
-  } finally {
-    mock.timers.reset();
-  }
-});
-
-test("reopening reuses the same dialog element and resets its state", async () => {
-  mock.timers.enable({ apis: ["setTimeout"] });
-  try {
-    installDom();
-    const first = showSentConfirmation();
-    mock.timers.tick(FLIGHT_MS);
-    await first;
-    const dialog = document.querySelector("#sent-dialog");
-    dialog.close();
-    showSentConfirmation();
-    assert.equal(document.body.children.length, 1);
-    assert.equal(dialog.classList.contains("is-landed"), false);
-    assert.equal(dialog.open, true);
-  } finally {
-    mock.timers.reset();
+test("every dialog closes through React state rather than the native close event", () => {
+  // Calling element.close() and waiting for the close event to reach React leaves the
+  // parent's `open` stuck true, and the modal will not reopen.
+  for (const path of ["components/wizard/contact-modal.tsx", "components/wizard/compare-dialog.tsx", "components/sent-confirmation.tsx"]) {
+    const source = read(path);
+    assert.doesNotMatch(source, /onClose=\{onClose\}/, `${path} must not rely on the native close event`);
+    assert.match(source, /onCancel=/, `${path} must handle Escape`);
   }
 });

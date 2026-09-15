@@ -1,4 +1,4 @@
-// Keep these rules in step with dist/inquiry-format.js, which the contact page uses to
+// Keep these rules in step with lib/inquiry-format.js, which the review dialogs use to
 // preview the outgoing email. tests/worker.test.mjs fails if the two ever diverge.
 const DEFAULT_RECIPIENT = "raiyanworks@gmail.com";
 const SUBJECT_PREFIX = "[DEERFIELD]";
@@ -46,7 +46,7 @@ async function sendInquiry(request, env) {
 
   const name = clean(input.name, 120);
   const email = clean(input.email, 254);
-  // Mirrors enforceSubject() in dist/inquiry-format.js: strip, then truncate, then
+  // Mirrors enforceSubject() in lib/inquiry-format.js: strip, then truncate, then
   // re-apply the prefix, so the dialog's preview survives this pass untouched.
   const subjectDetail = clean(input.subject, 600)
     .replace(/^\[DEERFIELD\]\s*/i, "")

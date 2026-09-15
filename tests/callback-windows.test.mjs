@@ -8,7 +8,7 @@ import {
   slotsBetween,
   timeLabel,
   windowLabel,
-} from "../dist/callback-windows.js";
+} from "../lib/callback-windows.js";
 
 const days = [
   { key: "2026-09-15", long: "Tuesday, September 15", shortDay: "Tue", shortDate: "Sep 15" },

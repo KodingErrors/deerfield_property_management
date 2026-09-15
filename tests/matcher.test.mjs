@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { matchProperty, matchProperties } from "../dist/matcher.js";
+import { matchProperty, matchProperties } from "../lib/matcher.js";
 
 const baseSearch = {
   type: "industrial",
