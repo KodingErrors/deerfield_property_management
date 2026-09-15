@@ -2,6 +2,7 @@ import { cities, featureSets, properties, SOURCE_CHECKED_AT } from "./data.js";
 import { formatNumber, matchProperties } from "./matcher.js";
 import { BODY_MAX_LENGTH, DEFAULT_RECIPIENT, SUBJECT_MAX_LENGTH, enforceBody, enforceSubject } from "./inquiry-format.js";
 import { bindPhoneFormatting } from "./phone-format.js";
+import { setSendState, settleSendState } from "./send-button.js";
 
 const STORAGE_KEY = "deerfield-search-v1";
 const THEME_KEY = "deerfield-theme";
@@ -620,7 +621,8 @@ function openContact() {
     '<footer class="modal-footer"><p class="form-status" id="wizard-send-status" aria-live="polite"></p>' +
     '<button class="secondary-button" type="button" data-copy-inquiry>Copy inquiry</button>' +
     '<button class="secondary-button" type="button" data-open-email>Open in email app</button>' +
-    '<button class="primary-button" type="button" data-send-inquiry>Send inquiry</button></footer>';
+    '<button class="primary-button send-button" type="button" data-send-inquiry></button></footer>';
+  setSendState(document.querySelector("[data-send-inquiry]"), "idle");
   bindPhoneFormatting(document.querySelector("#contact-phone"));
   packetEdited = false;
   updatePacketPreview();
@@ -777,9 +779,9 @@ async function sendWizardInquiry() {
   }
   error.textContent = "";
   const packet = finalInquiry();
-  button.disabled = true;
-  button.textContent = "Sending…";
+  setSendState(button, "sending");
   status.textContent = "Sending your inquiry securely…";
+  let sent = false;
   try {
     const response = await fetch("/api/inquiries", {
       method: "POST",
@@ -796,11 +798,12 @@ async function sendWizardInquiry() {
     if (!response.ok) throw new Error(result.error || "The email could not be sent. Please try again.");
     status.textContent = "Your inquiry was sent to Deerfield successfully.";
     showToast("Your inquiry was sent to Deerfield.");
+    sent = true;
   } catch (sendError) {
     status.textContent = sendError instanceof Error ? sendError.message : "The email could not be sent. Please try again.";
   } finally {
-    button.disabled = false;
-    button.textContent = "Send inquiry";
+    if (sent) settleSendState(button);
+    else setSendState(button, "error");
   }
 }
 

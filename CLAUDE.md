@@ -137,7 +137,14 @@ Other repo conventions:
   1280px column, 44px controls, and three corner radii (`--radius-sm` 4px controls, `--radius`
   6px cards, `--radius-lg` 8px dialogs) with 1px borders and 1px shadows. Keep new UI inside
   those tokens; do not reintroduce serif display type, tracked uppercase eyebrows, arrow glyphs
-  in button copy, or large blurred shadows.
+  in button copy, or large blurred shadows. The palette is the original sage-on-cream
+  (`--primary #456a3d`, `--bg #fbfcfa`); only type, boxing and dimensions were modernised.
+- Motion lives at the end of `dist/styles.css` and only answers pointer or action: hover lifts,
+  a nav underline, a one-shot `rise-in` for wizard steps/results/dialogs, and the paper-plane
+  "Send inquiry" button. Both inquiry paths render that button through
+  `dist/send-button.js` (`setSendState` / `settleSendState`: idle → sending → sent | error) —
+  never set its `textContent` directly. The `prefers-reduced-motion` block at the top zeroes
+  every duration and caps iteration counts, so new animations need no extra guard.
 - All markup is built with template literals, so every interpolated value goes through the local
   `escapeHtml()` in each module. There is no shared escape helper — each module defines its own.
 - A listing photo is a link to that property's detail page (`.card-photo-link`) on both the

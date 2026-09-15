@@ -2,6 +2,7 @@ import { properties } from "./data.js";
 import { DEFAULT_RECIPIENT, enforceBody, enforceSubject } from "./inquiry-format.js";
 import { SLOT_MINUTES, availabilityLines, mergedWindows, slotValue, slotsBetween, timeLabel, windowLabel } from "./callback-windows.js";
 import { bindPhoneFormatting } from "./phone-format.js";
+import { setSendState, settleSendState } from "./send-button.js";
 import "./site-shell.js";
 
 const TIME_ZONE = "America/Toronto";
@@ -371,9 +372,9 @@ sendButton.addEventListener("click", async () => {
     sendStatus.textContent = "Add a subject and email message before sending.";
     return;
   }
-  sendButton.disabled = true;
-  sendButton.textContent = "Sending…";
+  setSendState(sendButton, "sending");
   sendStatus.textContent = "Sending your inquiry securely…";
+  let sent = false;
   try {
     const response = await fetch("/api/inquiries", {
       method: "POST", headers: { "content-type": "application/json" },
@@ -391,11 +392,12 @@ sendButton.addEventListener("click", async () => {
     rangeStatus.textContent = "";
     renderSelectedProperties();
     pendingInquiry = null;
-    setTimeout(() => reviewDialog.close(), 1400);
+    sent = true;
+    setTimeout(() => reviewDialog.close(), 1800);
   } catch (error) {
     sendStatus.textContent = error instanceof Error ? error.message : "The email could not be sent. Please try again.";
   } finally {
-    sendButton.disabled = false;
-    sendButton.textContent = "Send inquiry";
+    if (sent) settleSendState(sendButton);
+    else setSendState(sendButton, "error");
   }
 });
