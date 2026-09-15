@@ -1,6 +1,7 @@
 import { cities, featureSets, properties, SOURCE_CHECKED_AT } from "./data.js";
 import { formatNumber, matchProperties } from "./matcher.js";
 import { DEFAULT_RECIPIENT, enforceBody, enforceSubject } from "./inquiry-format.js";
+import { bindPhoneFormatting } from "./phone-format.js";
 
 const STORAGE_KEY = "deerfield-search-v1";
 const THEME_KEY = "deerfield-theme";
@@ -615,6 +616,7 @@ function openContact() {
     '<button class="secondary-button" type="button" data-copy-inquiry>Copy inquiry</button>' +
     '<button class="secondary-button" type="button" data-open-email>Open in email app <span aria-hidden="true">↗</span></button>' +
     '<button class="primary-button" type="button" data-send-inquiry>Send inquiry →</button></footer>';
+  bindPhoneFormatting(document.querySelector("#contact-phone"));
   updatePacketPreview();
   contactDialog.showModal();
   document.querySelector("#contact-name")?.focus();

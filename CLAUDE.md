@@ -18,7 +18,7 @@ Three subdirectories of `dist/` *are* generated and gitignored — `dist/client/
 npm start                           # build, then wrangler dev on the bundle at http://127.0.0.1:8787 (serves /api/*)
 npm run dev                         # alias of npm start
 npm run build                       # assemble the Worker bundle into dist/{client,server,.openai}
-npm run test:p0                     # all tests (node:test): matcher, callback-windows, local-site, worker
+npm run test:p0                     # all tests (node:test): matcher, callback-windows, phone-format, local-site, worker
 node --test tests/matcher.test.mjs  # one test file
 npm run check                       # node --check over the hand-written modules (they are never bundled)
 python -m http.server 4173 --directory dist   # static preview; /api/inquiries will 404
@@ -61,6 +61,10 @@ Shared layers:
 - **`dist/callback-windows.js`** — pure model for callback availability (slot keys, merging
   contiguous slots into windows, email lines). DOM-free so it can be unit tested.
 - **`dist/inquiry-format.js`** — the canonical subject/body rules shared with the review dialog.
+- **`dist/phone-format.js`** — live North American phone formatting for both phone fields
+  (`(416) 262-6853`, `+1 …`). `formatPhone`/`caretAfterDigits` are pure and unit tested;
+  `bindPhoneFormatting(input)` wires the `input` listener. Anything it cannot parse as a
+  North American number (other country codes, extensions) is left exactly as typed.
 - **`dist/matcher.js`** — pure scoring, the only module with unit tests. No DOM access.
 - **`dist/site-shell.js`** — theme toggle + mobile drawer for the secondary pages. `app.js`
   deliberately reimplements this inline rather than importing it.

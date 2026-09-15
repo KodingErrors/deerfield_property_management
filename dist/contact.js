@@ -1,6 +1,7 @@
 import { properties } from "./data.js";
 import { DEFAULT_RECIPIENT, enforceBody, enforceSubject } from "./inquiry-format.js";
 import { SLOT_MINUTES, availabilityLines, mergedWindows, slotValue, slotsBetween, timeLabel, windowLabel } from "./callback-windows.js";
+import { bindPhoneFormatting } from "./phone-format.js";
 import "./site-shell.js";
 
 const TIME_ZONE = "America/Toronto";
@@ -276,6 +277,7 @@ coarsePointer.addEventListener("change", (event) => {
   applyAvailabilityMode();
 });
 
+bindPhoneFormatting(form.elements.phone);
 form.elements.phone.addEventListener("input", syncCallbackPhoneNote);
 
 applyAvailabilityMode();
