@@ -16,8 +16,8 @@
   "use strict";
 
   // ---- Settings -----------------------------------------------------------
-  const MIN_EXTRA_MINUTES = 20;   // smallest amount of fake time added
-  const MAX_EXTRA_MINUTES = 120;  // largest amount of fake time added
+  const MIN_EXTRA_MINUTES = 120;  // smallest amount of fake time added (2 hours)
+  const MAX_EXTRA_MINUTES = 360;  // largest amount of fake time added (6 hours)
   const HIDE_PROGRESS_FILL = false; // true = also hide the seekbar's played-portion fill (Twitch only)
   // -------------------------------------------------------------------------
 
@@ -84,7 +84,8 @@
     let stored = GM_getValue(key, null);
     // Twitch offsets saved by version 1 used a bare id key.
     if (typeof stored !== "number" && siteKey === "twitch") stored = GM_getValue("offset:" + id, null);
-    if (typeof stored !== "number") {
+    // Re-roll anything saved under an older, shorter range.
+    if (typeof stored !== "number" || stored < MIN_EXTRA_MINUTES * 60 || stored > MAX_EXTRA_MINUTES * 60) {
       const minutes = MIN_EXTRA_MINUTES + Math.random() * (MAX_EXTRA_MINUTES - MIN_EXTRA_MINUTES);
       stored = Math.round(minutes * 60);
     }
